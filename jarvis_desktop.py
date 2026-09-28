@@ -175,6 +175,7 @@ class JarvisDesktop(tk.Tk):
         tk.Label(brand,text="J A R V I S",bg="#050b12",fg=CYAN,font=("Segoe UI",20,"bold")).pack(anchor="w",pady=(8,0))
         tk.Label(brand,text="A.R.C. COMMAND DECK  //  PC AI AGENT",bg="#050b12",fg="#557889",font=("Consolas",7,"bold")).pack(anchor="w")
         self.top_state=tk.Label(top,text="● INITIALIZING",bg="#050b12",fg=YELLOW,font=("Consolas",10,"bold")); self.top_state.grid(row=0,column=1,sticky="w",padx=30)
+        self.status = self.top_state
         controls=tk.Frame(top,bg="#050b12"); controls.grid(row=0,column=2,sticky="e",padx=12)
         self.voice_control=tk.Button(controls,text="◉ VOICE: ON",command=self.toggle_voice,bg="#0a2531",fg=CYAN,activebackground="#123e4d",activeforeground=TEXT,relief="flat",padx=12,pady=7,font=("Consolas",8,"bold")); self.voice_control.pack(side="left",padx=3)
         self.tts_control=tk.Button(controls,text="◉ TTS: ON",command=self.toggle_tts,bg="#0a2531",fg=CYAN,activebackground="#123e4d",activeforeground=TEXT,relief="flat",padx=12,pady=7,font=("Consolas",8,"bold")); self.tts_control.pack(side="left",padx=3)
