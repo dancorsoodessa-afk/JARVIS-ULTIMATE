@@ -437,7 +437,8 @@ class JarvisDesktop(tk.Tk):
                 try:
                     heard = voice.listen_for_phrase(
                         silence_seconds=0.55,
-                        max_seconds=None,\n                        start_timeout=None,
+                        max_seconds=None,
+                        start_timeout=None,
                         on_speech_start=on_speech_start,
                     )
                     if not heard or not self._voice_loop_running:
@@ -455,7 +456,8 @@ class JarvisDesktop(tk.Tk):
                         self.events.put(("voice_status", "Jarvis активирован. Слушаю вас."))
                         command = voice.listen_for_phrase(
                             silence_seconds=0.55,
-                            max_seconds=None,\n                            start_timeout=None,
+                            max_seconds=None,
+                            start_timeout=None,
                             on_speech_start=on_speech_start,
                         )
                     elif not activated and time.monotonic() < self._voice_armed_until:
