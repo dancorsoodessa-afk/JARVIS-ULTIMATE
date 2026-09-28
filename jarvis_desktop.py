@@ -163,86 +163,67 @@ class JarvisDesktop(tk.Tk):
 
 
     def _build_ui(self):
-        self.grid_columnconfigure(0, weight=0, minsize=230)
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_columnconfigure(2, weight=0, minsize=270)
-        self.grid_rowconfigure(1, weight=1)
-        self.configure(bg="#050912")
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        self.configure(bg="#02060b")
+        root=tk.Frame(self,bg="#02060b"); root.grid(row=0,column=0,sticky="nsew")
+        root.grid_rowconfigure(1,weight=1); root.grid_columnconfigure(0,weight=1)
 
-        top = tk.Frame(self, bg="#070d17", highlightbackground="#183044", highlightthickness=1, height=72)
-        top.grid(row=0, column=0, columnspan=3, sticky="ew", padx=10, pady=(10, 8))
-        top.grid_propagate(False)
-        top.grid_columnconfigure(1, weight=1)
-        brand = tk.Frame(top, bg="#070d17")
-        brand.grid(row=0, column=0, sticky="w", padx=16)
-        tk.Label(brand, text="J·A·R·V·I·S", bg="#070d17", fg=CYAN,
-                 font=("Segoe UI", 18, "bold")).pack(anchor="w")
-        tk.Label(brand, text="ПЕРСОНАЛЬНАЯ AI-ОПЕРАЦИОННАЯ СИСТЕМА", bg="#070d17", fg=MUTED,
-                 font=("Consolas", 7, "bold")).pack(anchor="w")
-        core = tk.Frame(top, bg="#070d17")
-        core.grid(row=0, column=1, sticky="w", padx=22)
-        tk.Label(core, text="A.R.C. CORE  //  ЖИВОЕ ЯДРО", bg="#070d17", fg=TEXT,
-                 font=("Segoe UI", 12, "bold")).pack(anchor="w")
-        tk.Label(core, text="ЛОКАЛЬНОЕ УПРАВЛЕНИЕ • AI • ПАМЯТЬ • ГОЛОС • ИНСТРУМЕНТЫ",
-                 bg="#070d17", fg=MUTED, font=("Consolas", 7)).pack(anchor="w")
-        statusbox = tk.Frame(top, bg="#0b1621", highlightbackground="#214357", highlightthickness=1)
-        statusbox.grid(row=0, column=2, sticky="e", padx=14)
-        self.status = tk.Label(statusbox, text="● ЗАПУСК", bg="#0b1621", fg=YELLOW,
-                               font=("Consolas", 9, "bold"), padx=14, pady=8)
-        self.status.pack()
+        top=tk.Frame(root,bg="#050b12",height=70,highlightbackground="#173447",highlightthickness=1)
+        top.grid(row=0,column=0,sticky="ew",padx=10,pady=10); top.grid_propagate(False); top.grid_columnconfigure(1,weight=1)
+        brand=tk.Frame(top,bg="#050b12"); brand.grid(row=0,column=0,sticky="nsw",padx=18)
+        tk.Label(brand,text="J A R V I S",bg="#050b12",fg=CYAN,font=("Segoe UI",20,"bold")).pack(anchor="w",pady=(8,0))
+        tk.Label(brand,text="A.R.C. COMMAND DECK  //  PC AI AGENT",bg="#050b12",fg="#557889",font=("Consolas",7,"bold")).pack(anchor="w")
+        self.top_state=tk.Label(top,text="● INITIALIZING",bg="#050b12",fg=YELLOW,font=("Consolas",10,"bold")); self.top_state.grid(row=0,column=1,sticky="w",padx=30)
+        controls=tk.Frame(top,bg="#050b12"); controls.grid(row=0,column=2,sticky="e",padx=12)
+        self.voice_control=tk.Button(controls,text="◉ VOICE: ON",command=self.toggle_voice,bg="#0a2531",fg=CYAN,activebackground="#123e4d",activeforeground=TEXT,relief="flat",padx=12,pady=7,font=("Consolas",8,"bold")); self.voice_control.pack(side="left",padx=3)
+        self.tts_control=tk.Button(controls,text="◉ TTS: ON",command=self.toggle_tts,bg="#0a2531",fg=CYAN,activebackground="#123e4d",activeforeground=TEXT,relief="flat",padx=12,pady=7,font=("Consolas",8,"bold")); self.tts_control.pack(side="left",padx=3)
+        tk.Button(controls,text="⚙ SETTINGS",command=self.show_settings,bg="#0a111a",fg="#b8cbd5",activebackground="#123e4d",activeforeground=CYAN,relief="flat",padx=12,pady=7,font=("Consolas",8,"bold")).pack(side="left",padx=3)
 
-        self._build_sidebar()
-        self._build_center()
-        self._build_right()
+        deck=tk.Frame(root,bg="#02060b"); deck.grid(row=1,column=0,sticky="nsew",padx=10,pady=(0,10)); deck.grid_columnconfigure(0,weight=3); deck.grid_columnconfigure(1,weight=1); deck.grid_rowconfigure(0,weight=1)
+        reactor=tk.Frame(deck,bg="#040a11",highlightbackground="#173447",highlightthickness=1); reactor.grid(row=0,column=0,sticky="nsew",padx=(0,7)); reactor.grid_rowconfigure(0,weight=1); reactor.grid_columnconfigure(0,weight=1)
+        self.canvas=tk.Canvas(reactor,bg="#02070d",highlightthickness=0); self.canvas.grid(row=0,column=0,sticky="nsew")
+        self.hud_text=tk.Label(reactor,text="ИНИЦИАЛИЗАЦИЯ A.R.C.",bg="#02070d",fg=CYAN,font=("Segoe UI",18,"bold"),justify="center"); self.hud_text.place(relx=.5,rely=.08,anchor="n")
+        hud=tk.Frame(reactor,bg="#050d15",highlightbackground="#173447",highlightthickness=1); hud.place(relx=.5,rely=.93,relwidth=.94,relheight=.055,anchor="center")
+        self.hud_state=tk.Label(hud,text="STATE // IDLE",bg="#050d15",fg=CYAN,font=("Consolas",8,"bold")); self.hud_state.pack(side="left",padx=12)
+        self.hud_hint=tk.Label(hud,text="СКАЖИТЕ «ДЖАРВИС»",bg="#050d15",fg="#6f8996",font=("Consolas",8)); self.hud_hint.pack(side="right",padx=12)
+
+        right=tk.Frame(deck,bg="#050b12",highlightbackground="#173447",highlightthickness=1); right.grid(row=0,column=1,sticky="nsew",padx=(7,0))
+        tk.Label(right,text="LIVE SYSTEM",bg="#050b12",fg=TEXT,font=("Consolas",11,"bold")).pack(anchor="w",padx=14,pady=(14,2))
+        tk.Label(right,text="CORE TELEMETRY",bg="#050b12",fg="#587887",font=("Consolas",7)).pack(anchor="w",padx=14,pady=(0,12))
+        self.metrics={}
+        for name in ("Core","AI Provider","Memory","Tools","Voice","TTS"):
+            row=tk.Frame(right,bg="#08131d",highlightbackground="#112b3b",highlightthickness=1); row.pack(fill="x",padx=10,pady=3)
+            tk.Label(row,text=name.upper(),bg="#08131d",fg="#6e8b99",font=("Consolas",7,"bold")).pack(side="left",padx=9,pady=8)
+            val=tk.Label(row,text="—",bg="#08131d",fg=CYAN,font=("Consolas",8,"bold")); val.pack(side="right",padx=9); self.metrics[name]=val
+        tk.Frame(right,bg="#173447",height=1).pack(fill="x",padx=12,pady=12)
+        tk.Label(right,text="COMMANDS",bg="#050b12",fg=TEXT,font=("Consolas",8,"bold")).pack(anchor="w",padx=14,pady=(0,6))
+        for label,cmd in (("◉ SYSTEM STATUS","Покажи полный статус системы"),("◷ TIME","Который сейчас час?"),("◆ CAPABILITIES","Что ты умеешь?"),("▣ CHECK PC","Проверь состояние компьютера")):
+            tk.Button(right,text=label,command=lambda c=cmd:self._command_from_hud(c),bg="#07111a",fg="#a8bdc8",activebackground="#123847",activeforeground=CYAN,relief="flat",anchor="w",padx=10,pady=8,font=("Consolas",8,"bold")).pack(fill="x",padx=10,pady=2)
+        tk.Frame(right,bg="#173447",height=1).pack(fill="x",padx=12,pady=12)
+        self.tools_button=tk.Button(right,text="⌁ MODULES / TOOLS",command=self.show_tools,bg="#09232e",fg=CYAN,activebackground="#123e4d",activeforeground=TEXT,relief="flat",padx=10,pady=9,font=("Consolas",8,"bold")); self.tools_button.pack(fill="x",padx=10,pady=2)
+        self.enabled_label=tk.Label(right,text="MODULES: loading…",bg="#050b12",fg="#718b97",justify="left",anchor="w",font=("Consolas",7)); self.enabled_label.pack(fill="x",padx=14,pady=8)
+        self.side_core=tk.Label(right,text="● CORE — BOOT",bg="#050b12",fg=YELLOW,font=("Consolas",8,"bold")); self.side_core.pack(anchor="w",padx=14)
+        self.side_voice=tk.Label(right,text="◉ VOICE — WARMING STT",bg="#050b12",fg="#718b97",font=("Consolas",8,"bold")); self.side_voice.pack(anchor="w",padx=14,pady=(3,12))
+
+        bottom=tk.Frame(root,bg="#02060b"); bottom.grid(row=2,column=0,sticky="ew",padx=10,pady=(0,10)); bottom.grid_columnconfigure(0,weight=1)
+        self.input=tk.Entry(bottom,bg="#07111a",fg=TEXT,insertbackground=CYAN,relief="flat",font=("Segoe UI",11),highlightbackground="#173447",highlightthickness=1); self.input.grid(row=0,column=0,sticky="ew",ipady=12,padx=(0,6)); self.input.bind("<Return>",lambda _e:self.send())
+        self.voice_button=tk.Button(bottom,text="🎙 LISTEN",command=self.start_voice,bg="#092b38",fg=CYAN,activebackground="#104657",activeforeground=TEXT,relief="flat",padx=14,pady=9,font=("Consolas",8,"bold")); self.voice_button.grid(row=0,column=1,padx=3)
+        self.attach_button=tk.Button(bottom,text="📎 FILE",command=self.pick_attachments,bg="#07111a",fg="#b6c8d1",activebackground="#123847",activeforeground=CYAN,relief="flat",padx=14,pady=9,font=("Consolas",8,"bold")); self.attach_button.grid(row=0,column=2,padx=3)
+        self.send_button=tk.Button(bottom,text="▶ EXECUTE",command=self.send,bg="#0c5366",fg=TEXT,activebackground="#13768d",activeforeground="white",relief="flat",padx=18,pady=9,font=("Consolas",8,"bold")); self.send_button.grid(row=0,column=3,padx=(3,0))
+        self.attachment_label=tk.Label(root,text="ATTACHMENTS // NONE",bg="#02060b",fg="#4f6c79",anchor="w",font=("Consolas",7)); self.attachment_label.grid(row=3,column=0,sticky="ew",padx=12,pady=(0,4))
+        self.chat=tk.Text(root,bg="#03080e",fg=TEXT,insertbackground=CYAN,relief="flat",wrap="word",padx=14,pady=10,font=("Segoe UI",9),height=4,state="disabled",highlightbackground="#102837",highlightthickness=1); self.chat.grid(row=4,column=0,sticky="ew",padx=10,pady=(0,2)); self.chat.tag_configure("who",foreground=CYAN,font=("Consolas",8,"bold")); self.chat.tag_configure("stream_body",foreground=TEXT)
+        self._set_visual_state("IDLE",0.0); self.after(60,self._draw_orb)
 
     def _build_sidebar(self):
-        side = tk.Frame(self, bg="#070d16", highlightbackground="#183044", highlightthickness=1)
-        side.grid(row=1, column=0, sticky="nsew", padx=(10, 7), pady=(0, 10))
-        tk.Label(side, text="СИСТЕМА УПРАВЛЕНИЯ", bg="#070d16", fg=MUTED,
-                 font=("Consolas", 8, "bold")).pack(anchor="w", padx=14, pady=(14, 3))
-        self.side_core = tk.Label(side, text="● CORE — BOOT", bg="#070d16", fg=YELLOW,
-                                  font=("Consolas", 9, "bold"))
-        self.side_core.pack(anchor="w", padx=14, pady=(0, 10))
-        self.side_voice = tk.Label(side, text="◉ ГОЛОС — ЗАГРУЗКА STT", bg="#070d16", fg=MUTED,
-                                   font=("Consolas", 8, "bold"))
-        self.side_voice.pack(anchor="w", padx=14, pady=(0, 4))
-        self.side_memory = tk.Label(side, text="◆ ПАМЯТЬ — ACTIVE", bg="#070d16", fg=GREEN,
-                                    font=("Consolas", 8, "bold"))
-        self.side_memory.pack(anchor="w", padx=14, pady=(0, 12))
+        pass
 
-        tk.Frame(side, bg="#183044", height=1).pack(fill="x", padx=14, pady=(0, 12))
-        tk.Label(side, text="БЫСТРЫЕ МОДУЛИ", bg="#070d16", fg=TEXT,
-                 font=("Consolas", 8, "bold")).pack(anchor="w", padx=14, pady=(0, 7))
+    def _build_center(self):
+        pass
 
-        def nav(text, command, accent=False):
-            b=tk.Button(side,text=text,command=command,bg="#0a131f" if not accent else "#0b2630",
-                        fg=CYAN if accent else "#c4d1da",activebackground="#103645",
-                        activeforeground=CYAN,relief="flat",anchor="w",padx=11,pady=9,
-                        font=("Segoe UI",9,"bold"),highlightbackground="#184e61" if accent else "#142231",
-                        highlightthickness=1)
-            b.pack(fill="x", padx=10, pady=3)
-            return b
+    def _build_right(self):
+        pass
 
-        self.tools_button = nav("⌁  МОДУЛИ И ИНСТРУМЕНТЫ", self.show_tools, True)
-        nav("⚙  НАСТРОЙКИ И AI-ПРОВАЙДЕРЫ", self.show_settings)
-        nav("◉  ЗАПУСК ПРИЛОЖЕНИЙ", lambda: self._open_module_details("launch","Все установленные приложения","Полный список приложений Windows",True))
-        nav("▣  ПРОЦЕССЫ ПК", lambda: self._open_module_details("ps","Все процессы Windows","Список активных процессов",True))
-        nav("◎  OSINT / НАБЛЮДЕНИЕ", lambda: self._open_module_details("osint","OSINT-инструменты","Инструменты разведки и поиска",True))
-        nav("📎  ФАЙЛЫ И ВЛОЖЕНИЯ", self.pick_attachments)
-        nav("🎙  ГОЛОСОВОЙ РЕЖИМ", self.start_voice)
-
-        tk.Frame(side, bg="#183044", height=1).pack(fill="x", padx=14, pady=14)
-        tk.Label(side, text="СОСТОЯНИЕ МОДУЛЕЙ", bg="#070d16", fg=MUTED,
-                 font=("Consolas", 8, "bold")).pack(anchor="w", padx=14)
-        self.enabled_label = tk.Label(side, text="Активно модулей: —\nОтключено: —", bg="#070d16",
-                                      fg="#9eb0bc", justify="left", font=("Consolas", 8))
-        self.enabled_label.pack(anchor="w", padx=14, pady=6)
-        self.tool_status_label = tk.Label(side, text="ИНСТРУМЕНТЫ: ПОДГОТОВКА", bg="#070d16",
-                                          fg=MUTED, font=("Consolas", 8, "bold"))
-        self.tool_status_label.pack(anchor="w", padx=14, pady=4)
-        tk.Label(side, text="Кнопки открывают реальные модули. Выключенные инструменты не передаются агенту.",
-                 bg="#070d16", fg="#617786", wraplength=205, justify="left",
-                 font=("Segoe UI", 8)).pack(side="bottom", anchor="w", padx=14, pady=14)
     def _command_from_hud(self, command):
         self.input.delete(0, "end")
         self.input.insert(0, command)
@@ -341,7 +322,9 @@ class JarvisDesktop(tk.Tk):
             "SPEAKING": "ОТВЕЧАЮ",
             "ERROR": "ОШИБКА",
         }
-        self.hud_text.config(text=labels.get(state, state) + "\nJARVIS CORE")
+        self.hud_text.config(text=labels.get(state, state) + "\nJARVIS A.R.C.")
+        if hasattr(self, "hud_state"): self.hud_state.config(text="STATE // " + state)
+        if hasattr(self, "hud_hint"): self.hud_hint.config(text={"IDLE":"СКАЖИТЕ «ДЖАРВИС»","LISTENING":"СЛУШАЮ — БЕЗ ПОВТОРНОГО WAKE","THINKING":"AI ОБРАБАТЫВАЕТ ЗАПРОС","SPEAKING":"JARVIS ОТВЕЧАЕТ","ERROR":"ТРЕБУЕТСЯ ПРОВЕРКА"}.get(state,state))
 
     def _draw_orb(self):
         """Высокопроизводительный псевдо-3D ARC Reactor: глубина, орбиты, сетка и реакция на голос/AI."""
@@ -453,8 +436,7 @@ class JarvisDesktop(tk.Tk):
                 try:
                     heard = voice.listen_for_phrase(
                         silence_seconds=0.55,
-                        max_seconds=10.0,
-                        start_timeout=2.0,
+                        max_seconds=None,\n                        start_timeout=None,
                         on_speech_start=on_speech_start,
                     )
                     if not heard or not self._voice_loop_running:
@@ -472,8 +454,7 @@ class JarvisDesktop(tk.Tk):
                         self.events.put(("voice_status", "Jarvis активирован. Слушаю вас."))
                         command = voice.listen_for_phrase(
                             silence_seconds=0.55,
-                            max_seconds=10.0,
-                            start_timeout=4.0,
+                            max_seconds=None,\n                            start_timeout=None,
                             on_speech_start=on_speech_start,
                         )
                     elif not activated and time.monotonic() < self._voice_armed_until:
