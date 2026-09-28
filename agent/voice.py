@@ -92,8 +92,8 @@ def _calibrate(stream, blocks: int, block_size: int) -> float:
 def listen_for_phrase(
     samplerate: int = SAMPLE_RATE,
     silence_seconds: float = 0.55,
-    max_seconds: float = 120.0,
-    start_timeout: float = 4.0,
+    max_seconds: float | None = None,
+    start_timeout: float | None = 4.0,
     on_speech_start=None,
 ) -> str:
     """Записать одну фразу автоматически по уровню речи и распознать её."""
@@ -102,8 +102,8 @@ def listen_for_phrase(
 
     block_size = max(160, int(samplerate * BLOCK_SECONDS))
     silence_blocks = max(1, int(silence_seconds / BLOCK_SECONDS))
-    timeout_blocks = max(1, int(start_timeout / BLOCK_SECONDS))
-    max_blocks = max(1, int(max_seconds / BLOCK_SECONDS))
+    timeout_blocks = None if start_timeout is None else max(1, int(start_timeout / BLOCK_SECONDS))
+    max_blocks = None if max_seconds is None else max(1, int(max_seconds / BLOCK_SECONDS))
     chunks = []
     started = False
     silent = 0
@@ -117,7 +117,9 @@ def listen_for_phrase(
             noise = _calibrate(stream, 6, block_size)
             speech_threshold = max(0.006, noise * 1.8)
             end_threshold = max(0.004, noise * 1.15)
-            for i in range(timeout_blocks + max_blocks):
+            i = 0
+            while True:
+                i += 1
                 data, overflow = stream.read(block_size)
                 if overflow:
                     continue
@@ -131,7 +133,7 @@ def listen_for_phrase(
                         if on_speech_start:
                             try: on_speech_start()
                             except Exception: pass
-                    elif i >= timeout_blocks:
+                    elif timeout_blocks is not None and i >= timeout_blocks:
                         return ""
                     continue
                 chunks.append(block)
@@ -139,7 +141,7 @@ def listen_for_phrase(
                 silent = silent + 1 if level < end_threshold else 0
                 if spoken_blocks >= int(SPEECH_MIN_SECONDS / BLOCK_SECONDS) and silent >= silence_blocks:
                     break
-                if spoken_blocks >= max_blocks:
+                if max_blocks is not None and spoken_blocks >= max_blocks:
                     break
     except Exception as exc:
         raise RuntimeError(f"Не удалось открыть микрофон: {exc}") from exc
