@@ -355,6 +355,57 @@ class JarvisDesktop(tk.Tk):
         self.send()
 
 
+    def _set_visual_state(self, state, level=0.0):
+        """Update the visual HUD and reactor state without assuming optional widgets exist."""
+        state = str(state or "IDLE").upper()
+        if state not in {"IDLE", "LISTENING", "THINKING", "SPEAKING", "ERROR"}:
+            state = "IDLE"
+        self._visual_state = state
+        self._visual_level = max(0.0, min(1.0, float(level or 0.0)))
+        accent = RED if state == "ERROR" else (YELLOW if state == "THINKING" else CYAN)
+        labels = {
+            "IDLE": ("JARVIS READY", "STATE // IDLE"),
+            "LISTENING": ("LISTENING", "STATE // LISTENING"),
+            "THINKING": ("PROCESSING", "STATE // THINKING"),
+            "SPEAKING": ("JARVIS SPEAKING", "STATE // SPEAKING"),
+            "ERROR": ("SYSTEM ERROR", "STATE // ERROR"),
+        }
+        title, state_text = labels[state]
+        for name, value in (("hud_text", title), ("hud_state", state_text)):
+            widget = getattr(self, name, None)
+            if widget is not None and widget.winfo_exists():
+                widget.configure(text=value, fg=accent)
+        widget = getattr(self, "top_state", None)
+        if widget is not None and widget.winfo_exists():
+            widget.configure(text=f"● ONLINE / {state}", fg=accent)
+        widget = getattr(self, "status", None)
+        if widget is not None and widget.winfo_exists():
+            widget.configure(text=f"● {state}", fg=accent)
+        widget = getattr(self, "hud_hint", None)
+        if widget is not None and widget.winfo_exists():
+            hints = {
+                "IDLE": "СКАЖИТЕ «ДЖАРВИС»  •  ГОТОВ К КОМАНДЕ",
+                "LISTENING": "СЛУШАЮ  •  ГОВОРИТЕ КОМАНДУ",
+                "THINKING": "ОБРАБОТКА  •  ВЫБИРАЮ ИНСТРУМЕНТ",
+                "SPEAKING": "ОТВЕЧАЮ  •  ГОЛОСОВОЙ ВЫВОД",
+                "ERROR": "ОШИБКА  •  ПРОВЕРЬТЕ СОСТОЯНИЕ СИСТЕМЫ",
+            }
+            widget.configure(text=hints[state], fg="#527887" if state != "ERROR" else RED)
+        nav = getattr(self, "nav_state", {})
+        if isinstance(nav, dict):
+            for key, pair in nav.items():
+                try:
+                    dot, value = pair
+                    active = {
+                        "VOICE": state == "LISTENING",
+                        "CORE": state == "THINKING",
+                    }.get(key, False)
+                    dot.configure(fg=accent if active else CYAN)
+                    if active:
+                        value.configure(fg=accent, text=state)
+                except Exception:
+                    pass
+
     def _draw_orb(self):
         """Живой A.R.C. Reactor: псевдо-3D глубина, частицы, орбиты, сканер и реактивная энергия."""
         self.canvas.delete("all")
