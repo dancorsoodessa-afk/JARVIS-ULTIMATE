@@ -163,182 +163,178 @@ class JarvisDesktop(tk.Tk):
 
 
     def _build_ui(self):
-        # Modern JARVIS cockpit. This is the only active desktop layout.
+        # CAM-HM inspired holographic cockpit: purple/cyan glassmorphism + reactive ARC reactor.
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
-        self.configure(bg="#02050a")
+        self.configure(bg="#03010b")
 
-        root = tk.Frame(self, bg="#02050a")
-        root.grid(row=0, column=0, sticky="nsew", padx=12, pady=12)
+        root = tk.Frame(self, bg="#03010b")
+        root.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
         root.grid_rowconfigure(1, weight=1)
         root.grid_columnconfigure(1, weight=1)
 
-        # Top command bar
-        top = tk.Frame(root, bg="#060d14", highlightbackground="#173847", highlightthickness=1, height=66)
-        top.grid(row=0, column=0, columnspan=3, sticky="ew", pady=(0, 10))
+        # Top glass command strip
+        top = tk.Frame(root, bg="#09061a", highlightbackground="#44206a", highlightthickness=1, height=62)
+        top.grid(row=0, column=0, columnspan=3, sticky="ew", pady=(0, 8))
         top.grid_propagate(False)
         top.grid_columnconfigure(1, weight=1)
-
-        brand = tk.Frame(top, bg="#060d14")
-        brand.grid(row=0, column=0, sticky="nsw", padx=18)
-        tk.Label(brand, text="JARVIS", bg="#060d14", fg="#d9fbff",
-                 font=("Segoe UI", 21, "bold")).pack(anchor="w", pady=(8, 0))
-        tk.Label(brand, text="A.R.C. INTELLIGENCE SYSTEM", bg="#060d14", fg="#3c8da3",
+        brand = tk.Frame(top, bg="#09061a")
+        brand.grid(row=0, column=0, sticky="nsw", padx=16)
+        tk.Label(brand, text="J.A.R.V.I.S", bg="#09061a", fg="#f1eaff",
+                 font=("Segoe UI", 19, "bold")).pack(anchor="w", pady=(7, 0))
+        tk.Label(brand, text="HOLOGRAPHIC ARC // NEURAL COMMAND", bg="#09061a", fg="#8b63b5",
                  font=("Consolas", 7, "bold")).pack(anchor="w")
-
-        self.top_state = tk.Label(top, text="● ONLINE / IDLE", bg="#060d14", fg=CYAN,
+        self.top_state = tk.Label(top, text="● SYSTEM ONLINE", bg="#09061a", fg="#00eaff",
                                   font=("Consolas", 9, "bold"))
-        self.top_state.grid(row=0, column=1, sticky="w", padx=28)
+        self.top_state.grid(row=0, column=1, sticky="w", padx=24)
         self.status = self.top_state
 
-        controls = tk.Frame(top, bg="#060d14")
-        controls.grid(row=0, column=2, sticky="e", padx=12)
-        for text, command in (
-            ("VOICE", self.toggle_voice),
-            ("TTS", self.toggle_tts),
-            ("SETTINGS", self.show_settings),
-        ):
-            tk.Button(controls, text=text, command=command, bg="#0a1720", fg="#9ed8e5",
-                      activebackground="#103543", activeforeground="#ffffff",
-                      relief="flat", bd=0, padx=12, pady=7,
-                      font=("Consolas", 8, "bold")).pack(side="left", padx=3)
+        controls = tk.Frame(top, bg="#09061a")
+        controls.grid(row=0, column=2, sticky="e", padx=10)
+        self.voice_control = tk.Button(controls, text="◉ VOICE", command=self.toggle_voice,
+                                       bg="#170d2b", fg="#d9baff", activebackground="#281047",
+                                       activeforeground="#ffffff", relief="flat", bd=0,
+                                       padx=11, pady=7, font=("Consolas", 8, "bold"))
+        self.voice_control.pack(side="left", padx=3)
+        self.tts_control = tk.Button(controls, text="◌ TTS", command=self.toggle_tts,
+                                     bg="#170d2b", fg="#d9baff", activebackground="#281047",
+                                     activeforeground="#ffffff", relief="flat", bd=0,
+                                     padx=11, pady=7, font=("Consolas", 8, "bold"))
+        self.tts_control.pack(side="left", padx=3)
+        tk.Button(controls, text="⚙ SETTINGS", command=self.show_settings,
+                  bg="#170d2b", fg="#d9baff", activebackground="#281047",
+                  activeforeground="#ffffff", relief="flat", bd=0,
+                  padx=11, pady=7, font=("Consolas", 8, "bold")).pack(side="left", padx=3)
 
-        # Left navigation / system modules
-        left = tk.Frame(root, bg="#050b12", highlightbackground="#132f3d", highlightthickness=1, width=220)
-        left.grid(row=1, column=0, sticky="nsew", padx=(0, 8))
+        # Left holographic subsystem rail
+        left = tk.Frame(root, bg="#070412", highlightbackground="#32174d", highlightthickness=1, width=205)
+        left.grid(row=1, column=0, sticky="nsew", padx=(0, 7))
         left.grid_propagate(False)
-        tk.Label(left, text="SYSTEM", bg="#050b12", fg="#7ca5b3",
-                 font=("Consolas", 8, "bold")).pack(anchor="w", padx=16, pady=(18, 5))
+        tk.Label(left, text="ARC SUBSYSTEMS", bg="#070412", fg="#b68bda",
+                 font=("Consolas", 8, "bold")).pack(anchor="w", padx=14, pady=(16, 8))
         self.nav_state = {}
         nav_items = (
-            ("CORE", "AI CORE", "READY"),
-            ("VOICE", "VOICE ENGINE", "WARM"),
-            ("MEMORY", "MEMORY", "READY"),
-            ("TOOLS", "PC TOOLS", "READY"),
+            ("CORE", "NEURAL CORE", "READY"),
+            ("VOICE", "AUDIO MATRIX", "WARM"),
+            ("MEMORY", "MEMORY VAULT", "READY"),
+            ("TOOLS", "PC AGENT", "READY"),
             ("VISION", "VISION / OCR", "READY"),
-            ("NETWORK", "NETWORK", "ONLINE"),
+            ("NETWORK", "UPLINK", "ONLINE"),
         )
         for key, title, state in nav_items:
-            card = tk.Frame(left, bg="#07131c", highlightbackground="#102b39", highlightthickness=1)
-            card.pack(fill="x", padx=10, pady=4)
-            dot = tk.Label(card, text="●", bg="#07131c", fg=CYAN, font=("Segoe UI", 9))
-            dot.pack(side="left", padx=(10, 7), pady=9)
-            body = tk.Frame(card, bg="#07131c")
-            body.pack(side="left", fill="x", expand=True, pady=7)
-            tk.Label(body, text=title, bg="#07131c", fg="#c7e4eb",
+            card = tk.Frame(left, bg="#0c0719", highlightbackground="#24133a", highlightthickness=1)
+            card.pack(fill="x", padx=9, pady=3)
+            dot = tk.Label(card, text="◆", bg="#0c0719", fg="#8b4dff", font=("Segoe UI", 8))
+            dot.pack(side="left", padx=(9, 7), pady=8)
+            body = tk.Frame(card, bg="#0c0719")
+            body.pack(side="left", fill="x", expand=True, pady=6)
+            tk.Label(body, text=title, bg="#0c0719", fg="#ded0ed",
                      font=("Segoe UI", 8, "bold")).pack(anchor="w")
-            val = tk.Label(body, text=state, bg="#07131c", fg="#507887",
+            val = tk.Label(body, text=state, bg="#0c0719", fg="#6d4c87",
                            font=("Consolas", 6, "bold"))
             val.pack(anchor="w")
             self.nav_state[key] = (dot, val)
-
-        tk.Frame(left, bg="#173847", height=1).pack(fill="x", padx=14, pady=14)
-        tk.Button(left, text="⌁  MODULES / TOOLS", command=self.show_tools,
-                  bg="#09212b", fg=CYAN, activebackground="#103c4a",
+        tk.Frame(left, bg="#3b1b59", height=1).pack(fill="x", padx=13, pady=12)
+        tk.Button(left, text="◈  MODULE MATRIX", command=self.show_tools,
+                  bg="#120923", fg="#c78cff", activebackground="#25113f",
                   activeforeground="#ffffff", relief="flat", bd=0,
-                  anchor="w", padx=13, pady=10,
-                  font=("Consolas", 8, "bold")).pack(fill="x", padx=10)
-        tk.Label(left, text="A.R.C. COMMAND CORE\nPC AGENT • OFFLINE FIRST\nVOICE • AI • TOOLS • MEMORY",
-                 bg="#050b12", fg="#416674", justify="left",
-                 font=("Consolas", 7), anchor="w").pack(fill="x", padx=16, pady=18)
+                  anchor="w", padx=12, pady=10,
+                  font=("Consolas", 8, "bold")).pack(fill="x", padx=9)
+        tk.Label(left, text="GLASS HUD\nAUDIO REACTIVE\nTHREE-DIMENSIONAL ARC\nOFFLINE-FIRST INTELLIGENCE",
+                 bg="#070412", fg="#5b4270", justify="left",
+                 font=("Consolas", 7), anchor="w").pack(fill="x", padx=14, pady=16)
 
-        # Center: the reactor is the visual focus
-        center = tk.Frame(root, bg="#03080e", highlightbackground="#173847", highlightthickness=1)
+        # Center reactor stage
+        center = tk.Frame(root, bg="#03020a", highlightbackground="#3b1b59", highlightthickness=1)
         center.grid(row=1, column=1, sticky="nsew")
         center.grid_rowconfigure(0, weight=1)
         center.grid_columnconfigure(0, weight=1)
-
-        self.canvas = tk.Canvas(center, bg="#02070d", highlightthickness=0)
+        self.canvas = tk.Canvas(center, bg="#03020a", highlightthickness=0)
         self.canvas.grid(row=0, column=0, sticky="nsew")
 
-        # HUD overlays
-        tk.Label(center, text="A.R.C. REACTOR", bg="#03080e", fg="#d8fbff",
-                 font=("Segoe UI", 17, "bold")).place(relx=.5, rely=.035, anchor="n")
-        tk.Label(center, text="LIVE 3D CORE  //  NEURAL COMMAND INTERFACE",
-                 bg="#03080e", fg="#3c7f90", font=("Consolas", 7, "bold")).place(
-                     relx=.5, rely=.082, anchor="n")
-        self.hud_text = tk.Label(center, text="JARVIS READY", bg="#03080e", fg=CYAN,
+        tk.Label(center, text="ARC REACTOR // HOLOGRAPHIC CORE", bg="#03020a", fg="#eee4ff",
+                 font=("Segoe UI", 14, "bold")).place(relx=.5, rely=.025, anchor="n")
+        tk.Label(center, text="PROCEDURAL 3D  •  AUDIO REACTIVE  •  LIVE NEURAL LINK",
+                 bg="#03020a", fg="#76558f", font=("Consolas", 7, "bold")).place(
+                     relx=.5, rely=.072, anchor="n")
+        self.hud_text = tk.Label(center, text="JARVIS READY", bg="#03020a", fg="#00eaff",
                                  font=("Segoe UI", 11, "bold"))
-        self.hud_text.place(relx=.5, rely=.82, anchor="center")
-        self.hud_state = tk.Label(center, text="STATE // IDLE", bg="#03080e", fg=CYAN,
+        self.hud_text.place(relx=.5, rely=.84, anchor="center")
+        self.hud_state = tk.Label(center, text="STATE // IDLE", bg="#03020a", fg="#00eaff",
                                   font=("Consolas", 8, "bold"))
-        self.hud_state.place(relx=.5, rely=.86, anchor="center")
-        self.hud_hint = tk.Label(center, text="СКАЖИТЕ «ДЖАРВИС»  •  ГОТОВ К КОМАНДЕ",
-                                 bg="#03080e", fg="#527887", font=("Consolas", 7))
-        self.hud_hint.place(relx=.5, rely=.90, anchor="center")
+        self.hud_state.place(relx=.5, rely=.88, anchor="center")
+        self.hud_hint = tk.Label(center, text="СКАЖИТЕ «ДЖАРВИС»  •  REACTOR READY",
+                                 bg="#03020a", fg="#6b4d80", font=("Consolas", 7))
+        self.hud_hint.place(relx=.5, rely=.92, anchor="center")
 
-        # Right telemetry
-        right = tk.Frame(root, bg="#050b12", highlightbackground="#132f3d", highlightthickness=1, width=250)
-        right.grid(row=1, column=2, sticky="nsew", padx=(8, 0))
+        # Right glass telemetry
+        right = tk.Frame(root, bg="#070412", highlightbackground="#32174d", highlightthickness=1, width=235)
+        right.grid(row=1, column=2, sticky="nsew", padx=(7, 0))
         right.grid_propagate(False)
-        tk.Label(right, text="TELEMETRY", bg="#050b12", fg="#d6edf2",
-                 font=("Consolas", 10, "bold")).pack(anchor="w", padx=15, pady=(18, 2))
-        tk.Label(right, text="REAL-TIME SYSTEM MONITOR", bg="#050b12", fg="#416674",
-                 font=("Consolas", 6, "bold")).pack(anchor="w", padx=15, pady=(0, 12))
+        tk.Label(right, text="LIVE TELEMETRY", bg="#070412", fg="#e7dcf5",
+                 font=("Consolas", 10, "bold")).pack(anchor="w", padx=14, pady=(16, 2))
+        tk.Label(right, text="NEURAL / SYSTEM / AUDIO", bg="#070412", fg="#624875",
+                 font=("Consolas", 6, "bold")).pack(anchor="w", padx=14, pady=(0, 10))
         self.metrics = {}
         for name in ("Core", "AI Provider", "Memory", "Tools", "Voice", "TTS"):
-            row = tk.Frame(right, bg="#07131c", highlightbackground="#102b39", highlightthickness=1)
-            row.pack(fill="x", padx=10, pady=3)
-            tk.Label(row, text=name.upper(), bg="#07131c", fg="#668996",
-                     font=("Consolas", 7, "bold")).pack(side="left", padx=9, pady=8)
-            value = tk.Label(row, text="—", bg="#07131c", fg=CYAN,
+            rowm = tk.Frame(right, bg="#0c0719", highlightbackground="#24133a", highlightthickness=1)
+            rowm.pack(fill="x", padx=9, pady=3)
+            tk.Label(rowm, text=name.upper(), bg="#0c0719", fg="#765d87",
+                     font=("Consolas", 7, "bold")).pack(side="left", padx=8, pady=8)
+            value = tk.Label(rowm, text="—", bg="#0c0719", fg="#00eaff",
                              font=("Consolas", 7, "bold"))
-            value.pack(side="right", padx=9)
+            value.pack(side="right", padx=8)
             self.metrics[name] = value
-
-        tk.Frame(right, bg="#173847", height=1).pack(fill="x", padx=13, pady=13)
-        tk.Label(right, text="QUICK COMMANDS", bg="#050b12", fg="#d6edf2",
-                 font=("Consolas", 8, "bold")).pack(anchor="w", padx=14, pady=(0, 6))
+        tk.Frame(right, bg="#3b1b59", height=1).pack(fill="x", padx=12, pady=11)
+        tk.Label(right, text="QUICK ACTIONS", bg="#070412", fg="#e7dcf5",
+                 font=("Consolas", 8, "bold")).pack(anchor="w", padx=13, pady=(0, 5))
         for label, cmd in (
-            ("SYSTEM STATUS", "Покажи полный статус системы"),
+            ("SYSTEM SCAN", "Покажи полный статус системы"),
             ("TIME", "Который сейчас час?"),
             ("CAPABILITIES", "Что ты умеешь?"),
-            ("CHECK PC", "Проверь состояние компьютера"),
+            ("PC DIAGNOSTIC", "Проверь состояние компьютера"),
         ):
-            tk.Button(right, text=label, command=lambda c=cmd: self._command_from_hud(c),
-                      bg="#07131c", fg="#9dbcc5", activebackground="#103543",
-                      activeforeground=CYAN, relief="flat", bd=0, anchor="w",
-                      padx=10, pady=8, font=("Consolas", 7, "bold")).pack(fill="x", padx=10, pady=2)
+            tk.Button(right, text="›  " + label, command=lambda c=cmd: self._command_from_hud(c),
+                      bg="#0c0719", fg="#b9a7c6", activebackground="#211035",
+                      activeforeground="#00eaff", relief="flat", bd=0, anchor="w",
+                      padx=10, pady=8, font=("Consolas", 7, "bold")).pack(fill="x", padx=9, pady=2)
 
-        # Command dock
-        dock = tk.Frame(root, bg="#050b12", highlightbackground="#173847", highlightthickness=1)
-        dock.grid(row=2, column=0, columnspan=3, sticky="ew", pady=(10, 0))
+        # Bottom command glass
+        dock = tk.Frame(root, bg="#09061a", highlightbackground="#44206a", highlightthickness=1)
+        dock.grid(row=2, column=0, columnspan=3, sticky="ew", pady=(8, 0))
         dock.grid_columnconfigure(0, weight=1)
-        self.input = tk.Entry(dock, bg="#07131c", fg="#e7fbff", insertbackground=CYAN,
+        self.input = tk.Entry(dock, bg="#0c0719", fg="#f1eaff", insertbackground="#00eaff",
                               relief="flat", bd=0, font=("Segoe UI", 10))
-        self.input.grid(row=0, column=0, sticky="ew", padx=10, pady=9, ipady=9)
+        self.input.grid(row=0, column=0, sticky="ew", padx=9, pady=8, ipady=9)
         self.input.bind("<Return>", lambda _e: self.send())
-        self.voice_button = tk.Button(dock, text="MIC  LISTEN", command=self.start_voice,
-                                      bg="#092b38", fg=CYAN, activebackground="#104657",
-                                      activeforeground="#ffffff", relief="flat", bd=0,
-                                      padx=14, pady=8, font=("Consolas", 8, "bold"))
+        self.voice_button = tk.Button(dock, text="◉  LISTEN", command=self.start_voice,
+                                       bg="#17102a", fg="#d7b8ff", activebackground="#2a1548",
+                                       activeforeground="#ffffff", relief="flat", bd=0,
+                                       padx=13, pady=8, font=("Consolas", 8, "bold"))
         self.voice_button.grid(row=0, column=1, padx=3)
-        self.attach_button = tk.Button(dock, text="FILE", command=self.pick_attachments,
-                                       bg="#07131c", fg="#a9c2ca", activebackground="#103543",
-                                       activeforeground=CYAN, relief="flat", bd=0,
-                                       padx=14, pady=8, font=("Consolas", 8, "bold"))
+        self.attach_button = tk.Button(dock, text="＋ FILE", command=self.pick_attachments,
+                                       bg="#0d0918", fg="#a78bb8", activebackground="#211035",
+                                       activeforeground="#00eaff", relief="flat", bd=0,
+                                       padx=13, pady=8, font=("Consolas", 8, "bold"))
         self.attach_button.grid(row=0, column=2, padx=3)
-        self.send_button = tk.Button(dock, text="EXECUTE", command=self.send,
-                                     bg="#0b5365", fg="#efffff", activebackground="#13788f",
-                                     activeforeground="#ffffff", relief="flat", bd=0,
-                                     padx=18, pady=8, font=("Consolas", 8, "bold"))
-        self.send_button.grid(row=0, column=3, padx=(3, 10))
+        self.send_button = tk.Button(dock, text="EXECUTE  ›", command=self.send,
+                                      bg="#5b20a8", fg="#ffffff", activebackground="#7c31d8",
+                                      activeforeground="#ffffff", relief="flat", bd=0,
+                                      padx=17, pady=8, font=("Consolas", 8, "bold"))
+        self.send_button.grid(row=0, column=3, padx=(3, 9))
 
-        self.attachment_label = tk.Label(root, text="ATTACHMENTS // NONE", bg="#02050a",
-                                         fg="#3f6370", anchor="w", font=("Consolas", 6))
+        self.attachment_label = tk.Label(root, text="ATTACHMENTS // NONE", bg="#03010b",
+                                         fg="#5b4270", anchor="w", font=("Consolas", 6))
         self.attachment_label.grid(row=3, column=0, columnspan=3, sticky="ew", padx=6, pady=(3, 2))
-
-        # Compact conversation console below the cockpit
-        self.chat = tk.Text(root, bg="#03080e", fg=TEXT, insertbackground=CYAN,
-                            relief="flat", wrap="word", padx=12, pady=8,
+        self.chat = tk.Text(root, bg="#05020e", fg=TEXT, insertbackground="#00eaff",
+                            relief="flat", wrap="word", padx=12, pady=7,
                             font=("Segoe UI", 8), height=4, state="disabled",
-                            highlightbackground="#102b39", highlightthickness=1)
+                            highlightbackground="#24133a", highlightthickness=1)
         self.chat.grid(row=4, column=0, columnspan=3, sticky="ew")
-        self.chat.tag_configure("who", foreground=CYAN, font=("Consolas", 7, "bold"))
+        self.chat.tag_configure("who", foreground="#b87cff", font=("Consolas", 7, "bold"))
         self.chat.tag_configure("stream_body", foreground=TEXT)
-
         self._set_visual_state("IDLE", 0.0)
-        self.after(60, self._draw_orb)
+        self.after(40, self._draw_orb)
 
     def _build_sidebar(self):
         pass
@@ -407,123 +403,103 @@ class JarvisDesktop(tk.Tk):
                     pass
 
     def _draw_orb(self):
-        """Живой A.R.C. Reactor: псевдо-3D глубина, частицы, орбиты, сканер и реактивная энергия."""
+        """Holographic 3D ARC reactor inspired by cam-hm/jarvis: neon glass, depth, particles and audio reactivity."""
         self.canvas.delete("all")
-        w = max(520, self.canvas.winfo_width())
-        h = max(420, self.canvas.winfo_height())
-        cx, cy = w * 0.50, h * 0.48
-        phase = self._orb_phase
-        state = self._visual_state
-        level = self._visual_level
-        speed = {"IDLE": .018, "LISTENING": .075, "THINKING": .105, "SPEAKING": .09, "ERROR": .16}.get(state, .03)
-        core = RED if state == "ERROR" else (YELLOW if state == "THINKING" else CYAN)
-        bg = "#01050a"
-
-        # Глубокий фон: сетка перспективы + концентрические энергетические поля.
-        self.canvas.create_rectangle(0, 0, w, h, fill=bg, outline="")
-        horizon = cy + h * .14
-        for i in range(12):
-            yy = horizon + (i * i) * 2.7
-            self.canvas.create_line(0, yy, w, yy, fill="#071824", width=1)
-        for i in range(-12, 13):
-            self.canvas.create_line(cx + i * 30, horizon, cx + i * 115, h, fill="#06141e", width=1)
-
-        # Динамическое свечение вокруг ядра.
-        pulse = 1.0 + .07 * math.sin(phase * 3.2) + level * .30
-        for rr, width, color in ((235,1,"#082331"), (205,1,"#0b3140"), (176,2,"#0d4052"), (150,1,"#15576b")):
-            self.canvas.create_oval(cx-rr*1.0, cy-rr*.58, cx+rr*1.0, cy+rr*.58,
-                                    outline=color, width=width)
-
-        # 72 частицы с разной глубиной: дальние меньше и темнее, ближние ярче.
-        for i in range(72):
-            base = i * math.tau / 72
-            a = base + phase * (.07 + (i % 7) * .006)
-            z = .5 + .5 * math.sin(a * 1.73 + i * 2.1)
-            rx = 155 + 105 * z
-            ry = 58 + 48 * z
-            x = cx + math.cos(a) * rx
-            y = cy + math.sin(a) * ry
-            r = .7 + 2.2 * z * (.45 + level)
-            col = core if (i % 13 == 0 or (state == "LISTENING" and i % 7 == 0)) else "#17556b"
-            self.canvas.create_oval(x-r, y-r, x+r, y+r, fill=col, outline="")
-
-        # Три наклонённых орбитальных кольца с вращением в разных направлениях.
-        rings = [
-            (205, 72, 0.00,  .10, 1, "#1b657c"),
-            (178, 62, 0.43, -.16, 1, "#267e96"),
-            (150, 53,-0.55,  .21, 2, "#145066"),
-            (118, 43, 0.76, -.29, 1, "#2a8ca5"),
-        ]
-        for rx, ry, tilt, rot, width, color in rings:
-            a0 = phase * rot + tilt
-            pts = []
-            for j in range(121):
-                a = a0 + math.tau * j / 120
-                # Лёгкая перспектива по глубине кольца.
-                z = .5 + .5 * math.sin(a)
-                x = cx + math.cos(a) * rx
-                y = cy + math.sin(a) * ry * (0.82 + .18*z)
-                pts.append((x, y))
+        w=max(520,self.canvas.winfo_width()); h=max(430,self.canvas.winfo_height())
+        cx,cy=w*.5,h*.47; p=self._orb_phase; state=self._visual_state; level=self._visual_level
+        accent = RED if state=="ERROR" else (YELLOW if state=="THINKING" else "#00eaff")
+        purple="#a85cff"; violet="#6f35d4"; deep="#09051a"
+        self.canvas.create_rectangle(0,0,w,h,fill=deep,outline="")
+        # Holographic atmosphere / radial fields
+        for rr, col in ((270,"#160c2d"),(235,"#1c0e38"),(205,"#241146"),(175,"#2d1554")):
+            self.canvas.create_oval(cx-rr,cy-rr*.68,cx+rr,cy+rr*.68,outline=col,width=1)
+        # Perspective floor / scan grid
+        horizon=cy+h*.23
+        for i in range(11):
+            yy=horizon+(i*i)*3.1
+            self.canvas.create_line(0,yy,w,yy,fill="#160d26",width=1)
+        for i in range(-13,14):
+            self.canvas.create_line(cx+i*28,horizon,cx+i*120,h,fill="#120a20",width=1)
+        # Floating particles with depth
+        for i in range(150):
+            a=i*math.tau/150+p*(.025+(i%9)*.003)
+            z=.5+.5*math.sin(a*1.7+i*1.91)
+            rx=110+170*z; ry=48+100*z
+            x=cx+math.cos(a)*rx; y=cy+math.sin(a)*ry*.62
+            r=.35+1.8*z*(.45+level*1.7)
+            col=accent if i%29==0 or (state=="LISTENING" and i%11==0) else ("#6339a0" if z>.55 else "#292044")
+            self.canvas.create_oval(x-r,y-r,x+r,y+r,fill=col,outline="")
+        # Multiple tilted 3D rings
+        rings=((232,84,.12,.045,1,"#5b35a1"),(208,72,-.38,-.075,1,"#8b4fe2"),
+               (181,62,.58,.11,2,"#00a8d0"),(154,53,-.76,-.15,1,"#6c3ac5"),
+               (126,44,.28,.21,2,accent))
+        for rx,ry,tilt,rot,width,col in rings:
+            ang0=p*rot+tilt; pts=[]
+            for j in range(161):
+                a=ang0+math.tau*j/160; z=.5+.5*math.sin(a)
+                x=cx+math.cos(a)*rx; y=cy+math.sin(a)*ry*(.76+.24*z)
+                pts.append((x,y))
             for j in range(len(pts)-1):
-                self.canvas.create_line(*pts[j], *pts[j+1], fill=color, width=width)
-
-        # Яркий вращающийся сканирующий луч + след.
-        sweep = (phase * 1.8) % math.tau
-        for k in range(9, 0, -1):
-            a = sweep - k * .035
-            x2 = cx + math.cos(a) * (205 - k * 5)
-            y2 = cy + math.sin(a) * (82 - k * 2)
-            self.canvas.create_line(cx, cy, x2, y2, fill="#0d3545", width=1)
-        sx = cx + math.cos(sweep) * 208
-        sy = cy + math.sin(sweep) * 84
-        self.canvas.create_line(cx, cy, sx, sy, fill=core, width=2)
-        self.canvas.create_oval(sx-4, sy-4, sx+4, sy+4, fill=core, outline="")
-
-        # Радиальные импульсы реагируют на громкость/состояние.
-        spokes = 28
+                self.canvas.create_line(*pts[j],*pts[j+1],fill=col,width=width)
+        # Segmented holographic outer arcs
+        for ring_r, segs, col in ((247,24,purple),(218,18,"#00cfe8")):
+            for i in range(segs):
+                gap=.055 if i%2==0 else .12
+                a1=p*(.06 if ring_r==247 else -.09)+i*math.tau/segs+gap
+                a2=a1+math.tau/segs-gap*2.2
+                pts=[]
+                for j in range(10):
+                    a=a1+(a2-a1)*j/9
+                    pts.append((cx+math.cos(a)*ring_r,cy+math.sin(a)*ring_r*.55))
+                for j in range(len(pts)-1): self.canvas.create_line(*pts[j],*pts[j+1],fill=col,width=2)
+        # Hexagonal technical lattice around core
+        for radius in (74,92,111):
+            pts=[]
+            for i in range(7):
+                a=p*.16+i*math.tau/6
+                pts.append((cx+math.cos(a)*radius,cy+math.sin(a)*radius*.78))
+            self.canvas.create_polygon(pts,outline="#3c2263",fill="",width=1)
+        # Audio-reactive waveform spokes
+        spokes=56
         for i in range(spokes):
-            a = sweep + i * math.tau / spokes
-            wave = .5 + .5 * math.sin(phase * 4 + i * .9)
-            r1 = 48 + 8 * wave
-            r2 = 112 + 42 * level * wave
-            x1, y1 = cx + math.cos(a)*r1, cy + math.sin(a)*r1*.72
-            x2, y2 = cx + math.cos(a)*r2, cy + math.sin(a)*r2*.72
-            self.canvas.create_line(x1, y1, x2, y2,
-                                    fill=core if i % 4 == 0 else "#12475a",
-                                    width=2 if i % 7 == 0 else 1)
-
-        # Центральное кольцо и реактор: несколько слоёв создают объём.
-        for rr, col in ((82,"#082b39"), (68,"#0c4152"), (54,"#155d70"), (43,core)):
-            self.canvas.create_oval(cx-rr*pulse, cy-rr*pulse, cx+rr*pulse, cy+rr*pulse,
-                                    outline=col, width=2)
-        self.canvas.create_oval(cx-35, cy-35, cx+35, cy+35, fill="#06151d", outline=core, width=3)
-        self.canvas.create_oval(cx-24, cy-24, cx+24, cy+24, fill="#0b4251", outline="#72f6ff", width=2)
-        inner_r = 13 + 5 * pulse + 8 * level
-        self.canvas.create_oval(cx-inner_r, cy-inner_r, cx+inner_r, cy+inner_r,
-                                fill=core, outline="")
-        self.canvas.create_oval(cx-inner_r*.45, cy-inner_r*.45, cx+inner_r*.45, cy+inner_r*.45,
-                                fill="#efffff", outline="")
-        self.canvas.create_text(cx, cy-2, text="J", fill="#071018", font=("Segoe UI", 20, "bold"))
-        self.canvas.create_text(cx, cy+57, text=state, fill=core, font=("Consolas", 9, "bold"))
-
-        # Орбитальные узлы-модули.
-        labels = ("CORE","VOICE","AI","TOOLS","MEMORY","FILES","SYSTEM","NET")
-        for i, label in enumerate(labels):
-            a = phase * (.12 if i % 2 == 0 else -.09) + i * math.tau / 8
-            rx, ry = (205,72) if i % 2 == 0 else (178,62)
-            x, y = cx + math.cos(a)*rx, cy + math.sin(a)*ry
-            self.canvas.create_oval(x-6,y-6,x+6,y+6,fill=core if i in (0,1) else "#103b4d",outline="#2c7e95")
-            self.canvas.create_text(x, y + (16 if y < cy else -16), text=label,
-                                    fill="#76a9ba", font=("Consolas",7,"bold"))
-
-        self.canvas.create_text(18, 18, text="A.R.C. REACTOR // LIVE 3D", anchor="nw",
-                                fill="#5f8b9c", font=("Consolas",8,"bold"))
-        self.canvas.create_text(w-18, 18, text="SCAN // " + state, anchor="ne",
-                                fill=core, font=("Consolas",8,"bold"))
-        self.canvas.create_text(cx, h-22, text="J A R V I S  //  A.R.C. COMMAND CORE",
-                                fill="#4e7b8d", font=("Consolas",8,"bold"))
-        self._orb_phase += speed
-        self._orb_after = self.after(33, self._draw_orb)
+            a=i*math.tau/spokes+p*.9
+            wave=.5+.5*math.sin(p*5.2+i*.71)
+            r1=55+level*18; r2=118+wave*18+level*58*wave
+            x1,y1=cx+math.cos(a)*r1,cy+math.sin(a)*r1*.76
+            x2,y2=cx+math.cos(a)*r2,cy+math.sin(a)*r2*.76
+            col=accent if i%7==0 else ("#56318a" if i%2 else "#164d62")
+            self.canvas.create_line(x1,y1,x2,y2,fill=col,width=2 if i%7==0 else 1)
+        # Rotating radar sweep
+        sweep=(p*1.65)%math.tau
+        for k in range(14,0,-1):
+            a=sweep-k*.025
+            x=cx+math.cos(a)*235; y=cy+math.sin(a)*84
+            self.canvas.create_line(cx,cy,x,y,fill="#241448",width=1)
+        sx=cx+math.cos(sweep)*235; sy=cy+math.sin(sweep)*84
+        self.canvas.create_line(cx,cy,sx,sy,fill=accent,width=2)
+        self.canvas.create_oval(sx-4,sy-4,sx+4,sy+4,fill=accent,outline="")
+        # Volumetric reactor core
+        pulse=1+.05*math.sin(p*4)+level*.32
+        for rr,col,width in ((83,"#28134d",2),(69,"#3d1c6d",2),(57,"#56308e",2),(46,accent,2)):
+            self.canvas.create_oval(cx-rr*pulse,cy-rr*pulse,cx+rr*pulse,cy+rr*pulse,outline=col,width=width)
+        self.canvas.create_oval(cx-37,cy-37,cx+37,cy+37,fill="#080612",outline="#8d55db",width=2)
+        core_r=17+6*pulse+11*level
+        self.canvas.create_oval(cx-core_r,cy-core_r,cx+core_r,cy+core_r,fill=accent,outline="")
+        self.canvas.create_oval(cx-core_r*.45,cy-core_r*.45,cx+core_r*.45,cy+core_r*.45,fill="#f4fbff",outline="")
+        self.canvas.create_text(cx,cy,text="J",fill="#10051d",font=("Segoe UI",20,"bold"))
+        # Orbital module nodes
+        labels=("CORE","VOICE","AI","TOOLS","MEMORY","VISION","SYSTEM","NET")
+        for i,label in enumerate(labels):
+            a=p*(.10 if i%2==0 else -.07)+i*math.tau/8
+            rx,ry=(232,84) if i%2==0 else (181,62)
+            x,y=cx+math.cos(a)*rx,cy+math.sin(a)*ry
+            self.canvas.create_oval(x-5,y-5,x+5,y+5,fill=accent if i<2 else "#43236e",outline="#8b54cf")
+            self.canvas.create_text(x,y+(15 if y<cy else -15),text=label,fill="#9c79b5",font=("Consolas",6,"bold"))
+        self.canvas.create_text(16,16,text="CAM-HM // ARC HOLOGRAPHIC HUD",anchor="nw",fill="#76558f",font=("Consolas",7,"bold"))
+        self.canvas.create_text(w-16,16,text="AUDIO // "+state,anchor="ne",fill=accent,font=("Consolas",7,"bold"))
+        self.canvas.create_text(cx,h-18,text="J A R V I S  •  NEURAL REACTOR LINK",fill="#674b7e",font=("Consolas",7,"bold"))
+        self._orb_phase+= {"IDLE":.025,"LISTENING":.085,"THINKING":.12,"SPEAKING":.10,"ERROR":.16}.get(state,.03)
+        self._orb_after=self.after(33,self._draw_orb)
 
     def _start_agent(self):
         def work():
