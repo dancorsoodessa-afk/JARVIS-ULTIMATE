@@ -26,11 +26,11 @@ On your Windows PC, from the project root:
 powershell -ExecutionPolicy Bypass -File scripts\\build_exe.ps1
 ```
 
-The build script installs the project with all Windows extras, runs the full unittest suite, and then creates `dist\\jarvis.exe`.
+The build script installs the project with all Windows extras, runs the full unittest suite, and then creates `release\\JARVIS.exe`.
 
-Result: `dist\\jarvis.exe` — single console exe, with the optional Windows audio and screenshot dependencies bundled.
+Result: `release\\JARVIS.exe` — single console exe, with the optional Windows audio and screenshot dependencies bundled.
 
-GitHub Actions also builds the Windows executables on pushes and pull requests targeting `foundation`; the resulting package is uploaded as a workflow artifact.
+GitHub Actions also builds the Windows executable on pushes to `main`; the resulting `release\\JARVIS.exe` is uploaded as a workflow artifact.
 
 
 ## Быстрый старт для Windows
@@ -212,7 +212,7 @@ $env:JARVIS_PROVIDER  = "openai-compatible"
 $env:JARVIS_CHAT_URL  = "http://127.0.0.1:11434/v1/chat/completions"
 $env:JARVIS_CHAT_KEY  = ""
 $env:JARVIS_CHAT_MODEL = "your-local-model"
-.\\dist\\jarvis.exe
+.\\release\\JARVIS.exe
 ```
 
 `JARVIS_CHAT_MODEL` may be left empty when the local server exposes `/v1/models`; JARVIS will discover the first available model. The URL and model are configurable, so the same provider can work with compatible local runtimes such as Ollama, llama.cpp server, or LM Studio.
@@ -246,7 +246,7 @@ The Android workflow generates the Flutter Android platform during CI and builds
 ## Release checklist
 
 Before publishing a release, verify:
-1. `git pull origin foundation`
+1. `git pull origin main`
 2. `powershell -ExecutionPolicy Bypass -File scripts\\build_exe.ps1`
 3. `dist\\jarvis.exe` starts and `/status`, `/calc`, `/now`, `/volume`, `/exit` work.
 4. Verify the selected free/local AI provider and model through environment variables.
