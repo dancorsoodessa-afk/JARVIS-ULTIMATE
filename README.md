@@ -58,7 +58,7 @@ powershell -ExecutionPolicy Bypass -File scripts\\build_exe.ps1
 .\\release\\JARVIS Desktop.exe
 ~~~
 
-После сборки папка \`release\\\` является готовым комплектом. Скрипт сборки также создаёт \`JARVIS-Windows-x64.zip\`.
+После сборки папка \`release\\\` содержит готовый \`JARVIS.exe\`. Скрипт сборки не создаёт ZIP — только \`JARVIS.exe\`.
 
 ### Flutter UI
 
@@ -223,7 +223,7 @@ $env:JARVIS_CHAT_MODEL = "your-local-model"
 $env:JARVIS_PROVIDER = "local-vulkan"
 $env:JARVIS_LLAMA_CLI = "llama-cli"
 $env:JARVIS_MODEL = "model.gguf"
-.\\dist\\jarvis.exe
+.\\release\\JARVIS.exe
 ```
 
 This path runs the model locally and does not require an API key.
@@ -248,7 +248,7 @@ The Android workflow generates the Flutter Android platform during CI and builds
 Before publishing a release, verify:
 1. `git pull origin main`
 2. `powershell -ExecutionPolicy Bypass -File scripts\\build_exe.ps1`
-3. `dist\\jarvis.exe` starts and `/status`, `/calc`, `/now`, `/volume`, `/exit` work.
+3. `release\\JARVIS.exe` starts and `/status`, `/calc`, `/now`, `/volume`, `/exit` work.
 4. Verify the selected free/local AI provider and model through environment variables.
 5. Run the Flutter UI smoke test if the UI is part of the release.
 6. Test the **Jarvis wake word** and TTS interruption on a real Windows microphone. No clap activation is used.
