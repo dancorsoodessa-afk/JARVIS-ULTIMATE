@@ -42,3 +42,5 @@ jobs:
         run: |
           $tag = "windows-${{ github.run_number }}"
           gh release create $tag release/JARVIS.exe --title "JARVIS Windows ${{ github.run_number }}" --notes "Финальная Windows x64 сборка JARVIS. Прямой исполняемый файл без ZIP." --latest
+
+# Windows build verification trigger
