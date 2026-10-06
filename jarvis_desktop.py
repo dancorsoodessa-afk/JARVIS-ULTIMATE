@@ -251,8 +251,7 @@ class JarvisDesktop(tk.Tk):
         ).pack(fill="x", padx=9)
 
         tk.Label(
-            left, text="Все дополнительные возможности
-находятся внутри разделов.",
+            left, text="Все дополнительные возможности\\nнаходятся внутри разделов.",
             bg="#0e1823", fg="#647b8c", justify="left",
             font=("Segoe UI", 7)).pack(fill="x", padx=16, pady=16)
 
