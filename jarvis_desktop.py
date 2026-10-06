@@ -16,16 +16,16 @@ from agent.runtime import build_agent
 from agent import tts, voice, stt
 from agent.tools_catalog import TOOLS
 
-BG = "#081522"
-PANEL = "#0d2638"
-PANEL2 = "#123e55"
-LINE = "#2f7d9e"
-CYAN = "#6ff3ff"
-TEXT = "#f0fbff"
-MUTED = "#91adbd"
-GREEN = "#55e39b"
-RED = "#ff647c"
-YELLOW = "#ffcf6b"
+BG = "#0a111a"
+PANEL = "#0e1823"
+PANEL2 = "#132131"
+LINE = "#2a4052"
+CYAN = "#8bd7dc"
+TEXT = "#e7f0f5"
+MUTED = "#7f96a8"
+GREEN = "#8bc9a8"
+RED = "#e28a95"
+YELLOW = "#d9bd7a"
 APP_DIR = Path(os.environ.get("APPDATA", Path.home())) / "JARVIS"
 SETTINGS_FILE = APP_DIR / "settings.json"
 DEFAULT_PROVIDER = "openai-compatible"
@@ -163,176 +163,175 @@ class JarvisDesktop(tk.Tk):
 
 
     def _build_ui(self):
-        # CAM-HM inspired holographic cockpit: purple/cyan glassmorphism + reactive ARC reactor.
+        """Спокойный русскоязычный командный центр JARVIS."""
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
-        self.configure(bg="#03010b")
+        self.configure(bg="#0a111a")
 
-        root = tk.Frame(self, bg="#03010b")
-        root.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+        root = tk.Frame(self, bg="#0a111a")
+        root.grid(row=0, column=0, sticky="nsew", padx=12, pady=12)
         root.grid_rowconfigure(1, weight=1)
         root.grid_columnconfigure(1, weight=1)
 
-        # Top glass command strip
-        top = tk.Frame(root, bg="#09061a", highlightbackground="#44206a", highlightthickness=1, height=62)
-        top.grid(row=0, column=0, columnspan=3, sticky="ew", pady=(0, 8))
+        # Верхняя панель: только самое необходимое.
+        top = tk.Frame(root, bg="#101b28", highlightbackground="#24394d", highlightthickness=1, height=62)
+        top.grid(row=0, column=0, columnspan=2, sticky="ew", pady=(0, 10))
         top.grid_propagate(False)
         top.grid_columnconfigure(1, weight=1)
-        brand = tk.Frame(top, bg="#09061a")
-        brand.grid(row=0, column=0, sticky="nsw", padx=16)
-        tk.Label(brand, text="J.A.R.V.I.S", bg="#09061a", fg="#f1eaff",
+
+        brand = tk.Frame(top, bg="#101b28")
+        brand.grid(row=0, column=0, sticky="nsw", padx=18)
+        tk.Label(brand, text="JARVIS", bg="#101b28", fg="#e7f0f5",
                  font=("Segoe UI", 19, "bold")).pack(anchor="w", pady=(7, 0))
-        tk.Label(brand, text="HOLOGRAPHIC ARC // NEURAL COMMAND", bg="#09061a", fg="#8b63b5",
-                 font=("Consolas", 7, "bold")).pack(anchor="w")
-        self.top_state = tk.Label(top, text="● SYSTEM ONLINE", bg="#09061a", fg="#00eaff",
-                                  font=("Consolas", 9, "bold"))
+        tk.Label(brand, text="ЛИЧНЫЙ ИИ-ПОМОЩНИК", bg="#101b28", fg="#7f96a8",
+                 font=("Segoe UI", 7)).pack(anchor="w")
+
+        self.top_state = tk.Label(top, text="● ГОТОВ", bg="#101b28", fg="#8bd7dc",
+                                  font=("Segoe UI", 9, "bold"))
         self.top_state.grid(row=0, column=1, sticky="w", padx=24)
         self.status = self.top_state
 
-        controls = tk.Frame(top, bg="#09061a")
-        controls.grid(row=0, column=2, sticky="e", padx=10)
-        self.voice_control = tk.Button(controls, text="◉ VOICE", command=self.toggle_voice,
-                                       bg="#170d2b", fg="#d9baff", activebackground="#281047",
-                                       activeforeground="#ffffff", relief="flat", bd=0,
-                                       padx=11, pady=7, font=("Consolas", 8, "bold"))
+        controls = tk.Frame(top, bg="#101b28")
+        controls.grid(row=0, column=2, sticky="e", padx=12)
+        self.voice_control = tk.Button(
+            controls, text="Голос", command=self.toggle_voice,
+            bg="#172638", fg="#c8d9e4", activebackground="#20364a",
+            activeforeground="#ffffff", relief="flat", bd=0,
+            padx=12, pady=7, font=("Segoe UI", 9))
         self.voice_control.pack(side="left", padx=3)
-        self.tts_control = tk.Button(controls, text="◌ TTS", command=self.toggle_tts,
-                                     bg="#170d2b", fg="#d9baff", activebackground="#281047",
-                                     activeforeground="#ffffff", relief="flat", bd=0,
-                                     padx=11, pady=7, font=("Consolas", 8, "bold"))
+        self.tts_control = tk.Button(
+            controls, text="Озвучка", command=self.toggle_tts,
+            bg="#172638", fg="#c8d9e4", activebackground="#20364a",
+            activeforeground="#ffffff", relief="flat", bd=0,
+            padx=12, pady=7, font=("Segoe UI", 9))
         self.tts_control.pack(side="left", padx=3)
-        tk.Button(controls, text="⚙ SETTINGS", command=self.show_settings,
-                  bg="#170d2b", fg="#d9baff", activebackground="#281047",
-                  activeforeground="#ffffff", relief="flat", bd=0,
-                  padx=11, pady=7, font=("Consolas", 8, "bold")).pack(side="left", padx=3)
+        tk.Button(
+            controls, text="Настройки", command=self.show_settings,
+            bg="#172638", fg="#c8d9e4", activebackground="#20364a",
+            activeforeground="#ffffff", relief="flat", bd=0,
+            padx=12, pady=7, font=("Segoe UI", 9)).pack(side="left", padx=3)
 
-        # Left holographic subsystem rail
-        left = tk.Frame(root, bg="#070412", highlightbackground="#32174d", highlightthickness=1, width=205)
-        left.grid(row=1, column=0, sticky="nsew", padx=(0, 7))
+        # Левая навигация. Подробные функции остаются внутри разделов.
+        left = tk.Frame(root, bg="#0e1823", highlightbackground="#24394d", highlightthickness=1, width=205)
+        left.grid(row=1, column=0, sticky="nsew", padx=(0, 10))
         left.grid_propagate(False)
-        tk.Label(left, text="ARC SUBSYSTEMS", bg="#070412", fg="#b68bda",
-                 font=("Consolas", 8, "bold")).pack(anchor="w", padx=14, pady=(16, 8))
+
+        tk.Label(left, text="РАЗДЕЛЫ", bg="#0e1823", fg="#a8bac7",
+                 font=("Segoe UI", 9, "bold")).pack(anchor="w", padx=16, pady=(16, 9))
+
         self.nav_state = {}
         nav_items = (
-            ("CORE", "NEURAL CORE", "READY"),
-            ("VOICE", "AUDIO MATRIX", "WARM"),
-            ("MEMORY", "MEMORY VAULT", "READY"),
-            ("TOOLS", "PC AGENT", "READY"),
-            ("VISION", "VISION / OCR", "READY"),
-            ("NETWORK", "UPLINK", "ONLINE"),
+            ("CORE", "Главная", "Готов"),
+            ("VOICE", "Голос", "Готов"),
+            ("MEMORY", "Память", "Готова"),
+            ("TOOLS", "Инструменты", "Готовы"),
+            ("VISION", "Зрение", "Готово"),
+            ("NETWORK", "Интернет", "Онлайн"),
         )
         for key, title, state in nav_items:
-            card = tk.Frame(left, bg="#0c0719", highlightbackground="#24133a", highlightthickness=1)
+            card = tk.Frame(left, bg="#132131", highlightbackground="#1f3446", highlightthickness=1)
             card.pack(fill="x", padx=9, pady=3)
-            dot = tk.Label(card, text="◆", bg="#0c0719", fg="#8b4dff", font=("Segoe UI", 8))
-            dot.pack(side="left", padx=(9, 7), pady=8)
-            body = tk.Frame(card, bg="#0c0719")
-            body.pack(side="left", fill="x", expand=True, pady=6)
-            tk.Label(body, text=title, bg="#0c0719", fg="#ded0ed",
-                     font=("Segoe UI", 8, "bold")).pack(anchor="w")
-            val = tk.Label(body, text=state, bg="#0c0719", fg="#6d4c87",
-                           font=("Consolas", 6, "bold"))
+            dot = tk.Label(card, text="●", bg="#132131", fg="#8bd7dc", font=("Segoe UI", 8))
+            dot.pack(side="left", padx=(10, 8), pady=9)
+            body = tk.Frame(card, bg="#132131")
+            body.pack(side="left", fill="x", expand=True, pady=7)
+            tk.Label(body, text=title, bg="#132131", fg="#e1ebf0",
+                     font=("Segoe UI", 9, "bold")).pack(anchor="w")
+            val = tk.Label(body, text=state, bg="#132131", fg="#718899",
+                           font=("Segoe UI", 7))
             val.pack(anchor="w")
             self.nav_state[key] = (dot, val)
-        tk.Frame(left, bg="#3b1b59", height=1).pack(fill="x", padx=13, pady=12)
-        tk.Button(left, text="◈  MODULE MATRIX", command=self.show_tools,
-                  bg="#120923", fg="#c78cff", activebackground="#25113f",
-                  activeforeground="#ffffff", relief="flat", bd=0,
-                  anchor="w", padx=12, pady=10,
-                  font=("Consolas", 8, "bold")).pack(fill="x", padx=9)
-        tk.Label(left, text="GLASS HUD\nAUDIO REACTIVE\nTHREE-DIMENSIONAL ARC\nOFFLINE-FIRST INTELLIGENCE",
-                 bg="#070412", fg="#5b4270", justify="left",
-                 font=("Consolas", 7), anchor="w").pack(fill="x", padx=14, pady=16)
 
-        # Center reactor stage
-        center = tk.Frame(root, bg="#03020a", highlightbackground="#3b1b59", highlightthickness=1)
+        tk.Frame(left, bg="#24394d", height=1).pack(fill="x", padx=14, pady=12)
+        tk.Button(
+            left, text="Модули и инструменты", command=self.show_tools,
+            bg="#172638", fg="#c8d9e4", activebackground="#20364a",
+            activeforeground="#ffffff", relief="flat", bd=0,
+            anchor="w", padx=13, pady=10, font=("Segoe UI", 9, "bold")
+        ).pack(fill="x", padx=9)
+
+        tk.Label(
+            left, text="Все дополнительные возможности
+находятся внутри разделов.",
+            bg="#0e1823", fg="#647b8c", justify="left",
+            font=("Segoe UI", 7)).pack(fill="x", padx=16, pady=16)
+
+        # Центральная сцена. Визуал остаётся живым, но интерфейс вокруг него спокойный.
+        center = tk.Frame(root, bg="#0a111a", highlightbackground="#24394d", highlightthickness=1)
         center.grid(row=1, column=1, sticky="nsew")
         center.grid_rowconfigure(0, weight=1)
         center.grid_columnconfigure(0, weight=1)
-        self.canvas = tk.Canvas(center, bg="#03020a", highlightthickness=0)
+
+        self.canvas = tk.Canvas(center, bg="#0a111a", highlightthickness=0)
         self.canvas.grid(row=0, column=0, sticky="nsew")
 
-        tk.Label(center, text="ARC REACTOR // HOLOGRAPHIC CORE", bg="#03020a", fg="#eee4ff",
-                 font=("Segoe UI", 14, "bold")).place(relx=.5, rely=.025, anchor="n")
-        tk.Label(center, text="PROCEDURAL 3D  •  AUDIO REACTIVE  •  LIVE NEURAL LINK",
-                 bg="#03020a", fg="#76558f", font=("Consolas", 7, "bold")).place(
-                     relx=.5, rely=.072, anchor="n")
-        self.hud_text = tk.Label(center, text="JARVIS READY", bg="#03020a", fg="#00eaff",
-                                 font=("Segoe UI", 11, "bold"))
-        self.hud_text.place(relx=.5, rely=.84, anchor="center")
-        self.hud_state = tk.Label(center, text="STATE // IDLE", bg="#03020a", fg="#00eaff",
-                                  font=("Consolas", 8, "bold"))
-        self.hud_state.place(relx=.5, rely=.88, anchor="center")
-        self.hud_hint = tk.Label(center, text="СКАЖИТЕ «ДЖАРВИС»  •  REACTOR READY",
-                                 bg="#03020a", fg="#6b4d80", font=("Consolas", 7))
+        tk.Label(center, text="JARVIS", bg="#0a111a", fg="#e7f0f5",
+                 font=("Segoe UI", 15, "bold")).place(relx=.5, rely=.025, anchor="n")
+        tk.Label(center, text="ЦЕНТР КОМАНД", bg="#0a111a", fg="#718899",
+                 font=("Segoe UI", 7)).place(relx=.5, rely=.073, anchor="n")
+
+        self.hud_text = tk.Label(center, text="ГОТОВ", bg="#0a111a", fg="#8bd7dc",
+                                 font=("Segoe UI", 12, "bold"))
+        self.hud_text.place(relx=.5, rely=.83, anchor="center")
+        self.hud_state = tk.Label(center, text="СОСТОЯНИЕ: ГОТОВ", bg="#0a111a", fg="#8bd7dc",
+                                  font=("Segoe UI", 8))
+        self.hud_state.place(relx=.5, rely=.875, anchor="center")
+        self.hud_hint = tk.Label(
+            center, text="Скажите «Джарвис» или введите команду",
+            bg="#0a111a", fg="#718899", font=("Segoe UI", 8))
         self.hud_hint.place(relx=.5, rely=.92, anchor="center")
 
-        # Right glass telemetry
-        right = tk.Frame(root, bg="#070412", highlightbackground="#32174d", highlightthickness=1, width=235)
-        right.grid(row=1, column=2, sticky="nsew", padx=(7, 0))
-        right.grid_propagate(False)
-        tk.Label(right, text="LIVE TELEMETRY", bg="#070412", fg="#e7dcf5",
-                 font=("Consolas", 10, "bold")).pack(anchor="w", padx=14, pady=(16, 2))
-        tk.Label(right, text="NEURAL / SYSTEM / AUDIO", bg="#070412", fg="#624875",
-                 font=("Consolas", 6, "bold")).pack(anchor="w", padx=14, pady=(0, 10))
-        self.metrics = {}
-        for name in ("Core", "AI Provider", "Memory", "Tools", "Voice", "TTS"):
-            rowm = tk.Frame(right, bg="#0c0719", highlightbackground="#24133a", highlightthickness=1)
-            rowm.pack(fill="x", padx=9, pady=3)
-            tk.Label(rowm, text=name.upper(), bg="#0c0719", fg="#765d87",
-                     font=("Consolas", 7, "bold")).pack(side="left", padx=8, pady=8)
-            value = tk.Label(rowm, text="—", bg="#0c0719", fg="#00eaff",
-                             font=("Consolas", 7, "bold"))
-            value.pack(side="right", padx=8)
-            self.metrics[name] = value
-        tk.Frame(right, bg="#3b1b59", height=1).pack(fill="x", padx=12, pady=11)
-        tk.Label(right, text="QUICK ACTIONS", bg="#070412", fg="#e7dcf5",
-                 font=("Consolas", 8, "bold")).pack(anchor="w", padx=13, pady=(0, 5))
-        for label, cmd in (
-            ("SYSTEM SCAN", "Покажи полный статус системы"),
-            ("TIME", "Который сейчас час?"),
-            ("CAPABILITIES", "Что ты умеешь?"),
-            ("PC DIAGNOSTIC", "Проверь состояние компьютера"),
-        ):
-            tk.Button(right, text="›  " + label, command=lambda c=cmd: self._command_from_hud(c),
-                      bg="#0c0719", fg="#b9a7c6", activebackground="#211035",
-                      activeforeground="#00eaff", relief="flat", bd=0, anchor="w",
-                      padx=10, pady=8, font=("Consolas", 7, "bold")).pack(fill="x", padx=9, pady=2)
-
-        # Bottom command glass
-        dock = tk.Frame(root, bg="#09061a", highlightbackground="#44206a", highlightthickness=1)
-        dock.grid(row=2, column=0, columnspan=3, sticky="ew", pady=(8, 0))
+        # Нижняя командная панель — три основных действия.
+        dock = tk.Frame(root, bg="#101b28", highlightbackground="#24394d", highlightthickness=1)
+        dock.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(10, 0))
         dock.grid_columnconfigure(0, weight=1)
-        self.input = tk.Entry(dock, bg="#0c0719", fg="#f1eaff", insertbackground="#00eaff",
-                              relief="flat", bd=0, font=("Segoe UI", 10))
+
+        self.input = tk.Entry(
+            dock, bg="#132131", fg="#e7f0f5", insertbackground="#8bd7dc",
+            relief="flat", bd=0, font=("Segoe UI", 10))
         self.input.grid(row=0, column=0, sticky="ew", padx=9, pady=8, ipady=9)
         self.input.bind("<Return>", lambda _e: self.send())
-        self.voice_button = tk.Button(dock, text="◉  LISTEN", command=self.start_voice,
-                                       bg="#17102a", fg="#d7b8ff", activebackground="#2a1548",
-                                       activeforeground="#ffffff", relief="flat", bd=0,
-                                       padx=13, pady=8, font=("Consolas", 8, "bold"))
+
+        self.voice_button = tk.Button(
+            dock, text="Говорить", command=self.start_voice,
+            bg="#172638", fg="#c8d9e4", activebackground="#20364a",
+            activeforeground="#ffffff", relief="flat", bd=0,
+            padx=14, pady=8, font=("Segoe UI", 9, "bold"))
         self.voice_button.grid(row=0, column=1, padx=3)
-        self.attach_button = tk.Button(dock, text="＋ FILE", command=self.pick_attachments,
-                                       bg="#0d0918", fg="#a78bb8", activebackground="#211035",
-                                       activeforeground="#00eaff", relief="flat", bd=0,
-                                       padx=13, pady=8, font=("Consolas", 8, "bold"))
+
+        self.attach_button = tk.Button(
+            dock, text="Файл", command=self.pick_attachments,
+            bg="#172638", fg="#c8d9e4", activebackground="#20364a",
+            activeforeground="#ffffff", relief="flat", bd=0,
+            padx=14, pady=8, font=("Segoe UI", 9))
         self.attach_button.grid(row=0, column=2, padx=3)
-        self.send_button = tk.Button(dock, text="EXECUTE  ›", command=self.send,
-                                      bg="#5b20a8", fg="#ffffff", activebackground="#7c31d8",
-                                      activeforeground="#ffffff", relief="flat", bd=0,
-                                      padx=17, pady=8, font=("Consolas", 8, "bold"))
+
+        self.send_button = tk.Button(
+            dock, text="Отправить", command=self.send,
+            bg="#39727a", fg="#ffffff", activebackground="#4b8991",
+            activeforeground="#ffffff", relief="flat", bd=0,
+            padx=17, pady=8, font=("Segoe UI", 9, "bold"))
         self.send_button.grid(row=0, column=3, padx=(3, 9))
 
-        self.attachment_label = tk.Label(root, text="ATTACHMENTS // NONE", bg="#03010b",
-                                         fg="#5b4270", anchor="w", font=("Consolas", 6))
-        self.attachment_label.grid(row=3, column=0, columnspan=3, sticky="ew", padx=6, pady=(3, 2))
-        self.chat = tk.Text(root, bg="#05020e", fg=TEXT, insertbackground="#00eaff",
-                            relief="flat", wrap="word", padx=12, pady=7,
-                            font=("Segoe UI", 8), height=4, state="disabled",
-                            highlightbackground="#24133a", highlightthickness=1)
-        self.chat.grid(row=4, column=0, columnspan=3, sticky="ew")
-        self.chat.tag_configure("who", foreground="#b87cff", font=("Consolas", 7, "bold"))
-        self.chat.tag_configure("stream_body", foreground=TEXT)
+        self.attachment_label = tk.Label(
+            root, text="Вложений нет", bg="#0a111a", fg="#647b8c",
+            anchor="w", font=("Segoe UI", 7))
+        self.attachment_label.grid(row=3, column=0, columnspan=2, sticky="ew", padx=6, pady=(4, 2))
+
+        self.chat = tk.Text(
+            root, bg="#0c151f", fg="#dce7ed", insertbackground="#8bd7dc",
+            relief="flat", wrap="word", padx=12, pady=7,
+            font=("Segoe UI", 8), height=4, state="disabled",
+            highlightbackground="#1d3041", highlightthickness=1)
+        self.chat.grid(row=4, column=0, columnspan=2, sticky="ew")
+        self.chat.tag_configure("who", foreground="#9bc7cc", font=("Segoe UI", 7, "bold"))
+        self.chat.tag_configure("stream_body", foreground="#dce7ed")
+
+        # Метрики оставляем доступными для внутреннего обновления, но не загромождаем ими экран.
+        self.metrics = {}
+        for name in ("Core", "AI Provider", "Memory", "Tools", "Voice", "TTS"):
+            self.metrics[name] = tk.Label(root)
+
         self._set_visual_state("IDLE", 0.0)
         self.after(40, self._draw_orb)
 
