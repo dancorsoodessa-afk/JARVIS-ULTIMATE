@@ -11,6 +11,9 @@ def smart_launch(name: str) -> str:
             title,appid=line.split("|",1)
             if title.strip(): apps.append((title.strip(),appid.strip()))
     if not apps:
+        from agent.tools.apps import launch_needs_confirmation
+        if launch_needs_confirmation(name):
+            raise ValueError("Список приложений недоступен; запуск по пути или с аргументами через smart_launch запрещён. Используйте launch с подтверждением.")
         os.startfile(name)
         return f"Запускаю: {name}"
     names=[x[0] for x in apps]

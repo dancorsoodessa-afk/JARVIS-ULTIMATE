@@ -5,10 +5,12 @@ import base64
 import math
 import os
 import queue
+import socket
 import threading
 import time
 import tkinter as tk
 from pathlib import Path
+from urllib.parse import urlparse
 from tkinter import filedialog, messagebox, ttk
 import mimetypes
 
@@ -32,15 +34,35 @@ DEFAULT_PROVIDER = "openai-compatible"
 DEFAULT_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 
+_LOCAL_HOSTS = {"localhost", "127.0.0.1", "0.0.0.0", "::1"}
+
+
+def _local_endpoint_alive(url: str) -> bool:
+    """True if a local server is really listening on the URL's host:port."""
+    parsed = urlparse(url)
+    host = parsed.hostname or ""
+    port = parsed.port or (443 if parsed.scheme == "https" else 80)
+    if host == "0.0.0.0":
+        host = "127.0.0.1"
+    try:
+        with socket.create_connection((host, port), timeout=0.4):
+            return True
+    except OSError:
+        return False
+
+
 def _safe_endpoint(value: str | None) -> str:
-    """Reject stale local endpoints that cause WinError 10061 on normal cloud setup."""
+    """Keep a working local endpoint (Ollama etc.); replace only a dead one.
+
+    A stale local URL causes WinError 10061, so it falls back to the cloud default.
+    A local server that is actually running is left alone.
+    """
     url = (value or "").strip()
     if not url:
         return DEFAULT_URL
-    lowered = url.lower()
-    blocked = ("localhost", "127.0.0.1", "0.0.0.0")
-    if any(lowered.startswith(f"{scheme}{host}") for scheme in ("http://", "https://") for host in blocked):
-        return DEFAULT_URL
+    parsed = urlparse(url)
+    if parsed.scheme in ("http", "https") and (parsed.hostname or "").lower() in _LOCAL_HOSTS:
+        return url if _local_endpoint_alive(url) else DEFAULT_URL
     return url
 
 
@@ -235,11 +257,21 @@ class JarvisDesktop(tk.Tk):
             val.pack(anchor="w")
             self.nav_state[key] = (dot, val)
         tk.Frame(left, bg="#3b1b59", height=1).pack(fill="x", padx=13, pady=12)
-        tk.Button(left, text="◈  MODULE MATRIX", command=self.show_tools,
+        self.tools_button = tk.Button(left, text="◈  MODULE MATRIX", command=self.show_tools,
                   bg="#120923", fg="#c78cff", activebackground="#25113f",
                   activeforeground="#ffffff", relief="flat", bd=0,
                   anchor="w", padx=12, pady=10,
-                  font=("Consolas", 8, "bold")).pack(fill="x", padx=9)
+                  font=("Consolas", 8, "bold"))
+        self.tools_button.pack(fill="x", padx=9)
+        self.enabled_label = tk.Label(left, text="Модули: загрузка…", bg="#070412", fg="#8f74a6",
+                                      justify="left", anchor="w", font=("Consolas", 7))
+        self.enabled_label.pack(fill="x", padx=14, pady=(8, 0))
+        self.side_core = tk.Label(left, text="● CORE  —  ЗАГРУЗКА", bg="#070412", fg=YELLOW,
+                                  anchor="w", font=("Consolas", 7, "bold"))
+        self.side_core.pack(fill="x", padx=14, pady=(6, 0))
+        self.side_voice = tk.Label(left, text="◉ ГОЛОС — ОЖИДАНИЕ", bg="#070412", fg=MUTED,
+                                   anchor="w", font=("Consolas", 7, "bold"))
+        self.side_voice.pack(fill="x", padx=14, pady=(2, 0))
         tk.Label(left, text="GLASS HUD\nAUDIO REACTIVE\nTHREE-DIMENSIONAL ARC\nOFFLINE-FIRST INTELLIGENCE",
                  bg="#070412", fg="#5b4270", justify="left",
                  font=("Consolas", 7), anchor="w").pack(fill="x", padx=14, pady=16)

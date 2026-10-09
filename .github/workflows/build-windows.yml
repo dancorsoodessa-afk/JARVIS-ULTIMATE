@@ -27,5 +27,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: JARVIS-Windows-x64
-          path: JARVIS-Windows-x64.zip
+          path: release/JARVIS.exe
           if-no-files-found: error
