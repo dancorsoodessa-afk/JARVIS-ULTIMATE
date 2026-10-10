@@ -28,26 +28,24 @@ powershell -ExecutionPolicy Bypass -File scripts\\build_exe.ps1
 
 The build script installs the project with all Windows extras, runs the full unittest suite, and then creates `release\\JARVIS.exe`.
 
-Result: `release\\JARVIS.exe` — single console exe, with the optional Windows audio and screenshot dependencies bundled.
+Result: `release\\JARVIS.exe` — single-file graphical application with the Windows audio, screenshot, offline STT, and Piper voice assets bundled.
 
-GitHub Actions also builds the Windows executable on pushes to `main`; the resulting `release\\JARVIS.exe` is uploaded as a workflow artifact.
+GitHub Actions also builds the Windows executable on pushes to `main`; the resulting `release\\JARVIS.exe` is uploaded as the `JARVIS-Windows-x64` workflow artifact.
 
 
 ## Быстрый старт для Windows
 
-Если нужен обычный графический JARVIS, **не запускай \`jarvis.exe\` вручную**. Основной интерфейс — \`JARVIS Desktop.exe\`.
+Основной интерфейс — графическое приложение \`JARVIS.exe\`.
 
-### Вариант A — готовый Windows-пакет
+### Вариант A — готовая Windows-сборка
 
 1. Скачай артефакт \`JARVIS-Windows-x64\` из GitHub Actions.
-2. Распакуй весь пакет в одну папку. **Не вытаскивай только один EXE:** рядом должны находиться \`piper\\\` и остальные файлы пакета.
-3. Запусти **\`JARVIS Desktop.exe\`**.
+2. Распакуй скачанный артефакт.
+3. Запусти **\`JARVIS.exe\`**.
 4. Настрой провайдера ИИ и голос в окне настроек.
 5. Ключи API храни в настройках/переменных окружения и **не добавляй их в Git**.
 
-Готовый пакет содержит два EXE:
-- \`JARVIS Desktop.exe\` — основной графический интерфейс.
-- \`JARVIS.exe\` — ядро/CLI.
+Сборка создаёт один графический EXE; Piper и модель распознавания речи включены в него.
 
 ### Вариант B — запуск из исходников
 
@@ -55,10 +53,10 @@ GitHub Actions also builds the Windows executable on pushes to `main`; the resul
 
 ~~~
 powershell -ExecutionPolicy Bypass -File scripts\\build_exe.ps1
-.\\release\\JARVIS Desktop.exe
+.\\release\\JARVIS.exe
 ~~~
 
-После сборки папка \`release\\\` содержит готовый \`JARVIS.exe\`. Скрипт сборки не создаёт ZIP — только \`JARVIS.exe\`.
+После сборки папка \`release\\\` содержит готовый \`JARVIS.exe\` и \`README.txt\`.
 
 ### Flutter UI
 
@@ -76,7 +74,7 @@ flutter run -d windows
 flutter build windows
 ~~~
 
-Flutter UI может запускать агент через IPC. Если готового Windows EXE нет, **Flutter сам по себе не заменяет Python-ядро**: для полной работы агента нужен собранный JARVIS или доступный Python-окружению backend/IPC-процесс. В обычной готовой Windows-установке используй \`JARVIS Desktop.exe\` из папки \`release\\\`.
+Flutter UI может запускать агент через IPC. Если готового Windows EXE нет, **Flutter сам по себе не заменяет Python-ядро**: для полной работы агента нужен собранный JARVIS или доступный Python-окружению backend/IPC-процесс. В обычной готовой Windows-установке используй \`JARVIS.exe\` из папки \`release\\\`.
 
 ## Переменные окружения
 
@@ -125,15 +123,14 @@ $env:JARVIS_MODEL = "C:\\Models\\model.gguf"
 
 ## Troubleshooting
 
-### \`JARVIS Desktop.exe\` не запускается
+### \`JARVIS.exe\` не запускается
 
-- Распакуй **весь** Windows-пакет, а не только EXE.
-- Проверь, что рядом с EXE присутствует папка \`piper\\\`.
+- Убедись, что скачанный артефакт полностью распакован.
 - Попробуй запустить EXE из PowerShell, чтобы увидеть текст ошибки:
 
 ~~~
 cd "C:\\путь\\к\\JARVIS"
-.\\JARVIS Desktop.exe
+.\\JARVIS.exe
 ~~~
 
 - Если Windows Defender показывает предупреждение для самособранного EXE, проверь источник пакета и подпись/хэш файла перед разрешением запуска. Не отключай Defender целиком.
@@ -148,7 +145,7 @@ cd "C:\\путь\\к\\JARVIS"
 ### Нет голоса / ошибка TTS
 
 - Для исходников установи голосовые зависимости: \`poetry install --extras voice\`.
-- Для готового Windows-пакета проверь наличие \`piper\\piper.exe\` и русской модели Dmitri.
+- В Windows-сборке Piper и голосовая модель включены в EXE.
 - Проверь настройки TTS и микрофона в JARVIS.
 
 ### Не работает микрофон / wake word
@@ -187,16 +184,16 @@ cd "C:\\путь\\к\\jarvis"
 Get-ChildItem
 ~~~
 
-Запустить Desktop:
+Запустить JARVIS:
 
 ~~~
-.\\JARVIS Desktop.exe
+.\\JARVIS.exe
 ~~~
 
 Проверить, что EXE существует:
 
 ~~~
-Test-Path ".\\JARVIS Desktop.exe"
+Test-Path ".\\JARVIS.exe"
 ~~~
 
 ## AI providers
@@ -267,7 +264,7 @@ Never put API keys, memory files, reminders, or runtime logs into Git.
 
 ## Голосовой режим
 
-Основной режим: локальный `faster-whisper small` для распознавания и локальный `Piper + Dmitri Medium` для озвучивания. Облачные TTS в JARVIS не используются.
+Windows-сборка содержит локальный `faster-whisper base` и `Piper + Dmitri Medium` для озвучивания. При запуске из исходников без загруженной модели faster-whisper может скачать `small`. Облачные TTS в JARVIS не используются.
 
 Основной режим активации JARVIS на desktop/CLI:
 
