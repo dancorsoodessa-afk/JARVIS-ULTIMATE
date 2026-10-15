@@ -220,3 +220,10 @@ __marimo__/
 # JARVIS build artifacts (downloaded at build time, never committed)
 vendor/
 release/
+
+# Client-rendered AI-agent output (per AGENTS.md - not committed)
+.claude/
+.continue/
+CLAUDE.md
+.github/copilot-instructions.md
+.github/copilot-toolbox-mcp-skills-awareness.md
