@@ -20,5 +20,5 @@
 
 - Keep the foundation branch green.
 - Run the full test suite after meaningful code/configuration changes.
-- For Android changes, verify source -> GitHub Actions -> APK artifact -> APK signature/manifest/hash before calling a build ready.
+- For Android changes, verify source -> GitHub Actions -> APK artifact -> APK signature/manifest/hash before calling a build ready. (There is currently no Android build; this applies only if one is added. The verified build path today is Windows: source -> GitHub Actions -> release/JARVIS.exe -> smoke test.)
 - Before release, verify Windows packaging and run a Windows executable smoke test.

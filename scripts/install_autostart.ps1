@@ -8,7 +8,7 @@
 # listens on TCP IPC 127.0.0.1:8765 so the UI / remote clients can attach.
 param(
     [switch]$Remove,
-    [string]$ExePath = "$PWD\dist\jarvis.exe"
+    [string]$ExePath = "$PWD\release\JARVIS.exe"
 )
 
 $RegPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"

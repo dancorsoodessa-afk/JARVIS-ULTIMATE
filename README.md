@@ -28,6 +28,8 @@ powershell -ExecutionPolicy Bypass -File scripts\\build_exe.ps1
 
 The build script installs the project with all Windows extras, runs the full unittest suite, and then creates `release\\JARVIS.exe`.
 
+Note: the script downloads the offline STT model and Piper voice into `vendor\\` at build time (and `jarvis_desktop.spec` bundles them). Building on a machine without network access to Hugging Face / GitHub releases will fail at that step.
+
 Result: `release\\JARVIS.exe` — single-file graphical application with the Windows audio, screenshot, offline STT, and Piper voice assets bundled.
 
 GitHub Actions also builds the Windows executable on pushes to `main`; the resulting `release\\JARVIS.exe` is uploaded as the `JARVIS-Windows-x64` workflow artifact.
@@ -233,12 +235,12 @@ flutter pub get
 flutter run -d windows        # or: flutter build windows
 ```
 
-The Flutter UI can spawn the agent through IPC. The native Windows desktop UI is `jarvis_desktop.py` and is packaged as `JARVIS-Desktop.exe` by CI.
+The Flutter UI can spawn the agent through IPC. The native Windows desktop UI is `jarvis_desktop.py` and is packaged as `JARVIS.exe` by CI.
 Preview of the reactor animation without Flutter: open `ui/jarvis_reactor.html`.
 
 ## Android
 
-The Android workflow generates the Flutter Android platform during CI and builds a standalone APK from `ui/`. The Android client connects directly to the configured OpenAI-compatible API; it is independent from the Windows process and does not use the Windows IPC channel.
+There is currently **no Android build** in this repository. The canonical deliverable is the single-file Windows x64 `JARVIS.exe` produced by `scripts/build_exe.ps1` and the `build-exe.yml` workflow. Historical mentions of an Android APK came from the earlier Windows foundation project and do not apply to this codebase.
 
 ## Release checklist
 
