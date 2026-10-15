@@ -12,7 +12,7 @@ import time
 from pathlib import Path
 
 from .logging_setup import get as get_log
-from . import stt, tts, voice
+from . import tts, voice
 
 DEFAULT_WAKE_WORDS = ("джарвис", "jarvis")
 STOP_PHRASES = (

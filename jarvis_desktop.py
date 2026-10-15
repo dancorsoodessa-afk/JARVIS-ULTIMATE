@@ -9,7 +9,7 @@ import threading
 import time
 import tkinter as tk
 from pathlib import Path
-from tkinter import filedialog, messagebox, ttk
+from tkinter import filedialog, ttk
 import mimetypes
 
 from agent.runtime import build_agent
@@ -406,7 +406,7 @@ class JarvisDesktop(tk.Tk):
         w=max(520,self.canvas.winfo_width()); h=max(430,self.canvas.winfo_height())
         cx,cy=w*.5,h*.47; p=self._orb_phase; state=self._visual_state; level=self._visual_level
         accent = RED if state=="ERROR" else (YELLOW if state=="THINKING" else "#00eaff")
-        purple="#a85cff"; violet="#6f35d4"; deep="#09051a"
+        purple="#a85cff"; deep="#09051a"
         self.canvas.create_rectangle(0,0,w,h,fill=deep,outline="")
         # Holographic atmosphere / radial fields
         for rr, col in ((270,"#160c2d"),(235,"#1c0e38"),(205,"#241146"),(175,"#2d1554")):
@@ -918,7 +918,6 @@ class JarvisDesktop(tk.Tk):
 
         disabled = set(self.settings.get("disabled_tools", []))
         switches = {}
-        catalog = {name: (title, desc, kind) for name, title, desc, kind in TOOLS}
         for index, (name, title, desc, kind) in enumerate(TOOLS, start=1):
             enabled_var = tk.BooleanVar(value=name not in disabled)
             switches[name] = enabled_var

@@ -125,16 +125,15 @@ def _speak_piper(text: str) -> Path:
     piper, voice = _piper_paths()
     out = Path(tempfile.gettempdir()) / "jarvis_tts.wav"
     flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-    with open(out, "wb") as wav:
-        subprocess.run(
-            [piper, "--model", str(voice), "--output_file", str(out)],
-            input=text.encode("utf-8"),
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.PIPE,
-            check=True,
-            timeout=60,
-            creationflags=flags,
-        )
+    subprocess.run(
+        [piper, "--model", str(voice), "--output_file", str(out)],
+        input=text.encode("utf-8"),
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+        check=True,
+        timeout=60,
+        creationflags=flags,
+    )
     return out
 
 

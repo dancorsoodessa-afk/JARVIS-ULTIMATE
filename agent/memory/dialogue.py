@@ -4,8 +4,6 @@ SessionMemory persists chat_history across restarts and trims it to a
 bounded window (project performance rule: bounded, never unbounded).
 """
 
-import datetime as _dt
-
 MAX_EXCHANGES = 40  # user+assistant pairs kept in persistent history
 
 

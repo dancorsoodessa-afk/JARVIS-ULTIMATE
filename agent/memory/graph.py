@@ -449,7 +449,7 @@ class KnowledgeGraph:
         ) or "—"
 
         lines = [
-            f"📊 Граф знаний Jarvis:",
+            "📊 Граф знаний Jarvis:",
             f"• Сущностей: {len(entities)}",
             f"• Связей (фактов): {len(relations)}",
             f"• Ключевые узлы: {top_str}",

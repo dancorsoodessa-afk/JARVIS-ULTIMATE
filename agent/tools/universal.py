@@ -1,6 +1,6 @@
 """Universal Windows/file tools for JARVIS."""
 from __future__ import annotations
-import json, os, platform, shutil, subprocess, sys, tarfile, zipfile, tempfile, urllib.request, urllib.error, urllib.parse
+import json, os, shutil, subprocess, sys, tarfile, zipfile, urllib.request, urllib.error, urllib.parse
 from pathlib import Path
 
 MAX_TEXT = 120_000
@@ -273,8 +273,6 @@ def android_app_diagnostics(serial: str = "", package: str = "") -> str:
     adb = shutil.which("adb")
     if not adb:
         return "ADB не найден. Нужен Android SDK Platform-Tools."
-    code, devices = subprocess.run([adb, "devices", "-l"], capture_output=True, text=True,
-                                   encoding="utf-8", errors="replace", timeout=20).returncode, ""
     p = subprocess.run([adb, "devices", "-l"], capture_output=True, text=True,
                        encoding="utf-8", errors="replace", timeout=20)
     devices = (p.stdout + p.stderr).strip()

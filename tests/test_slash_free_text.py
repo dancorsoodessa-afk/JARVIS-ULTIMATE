@@ -1,7 +1,5 @@
 """Regression: free-text slash commands get their words joined."""
 
-import pytest
-
 from agent.core import JarvisAgent
 from agent.tools.registry import ToolRegistry
 from agent.skills import NoteStore
