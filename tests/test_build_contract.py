@@ -39,6 +39,32 @@ class TestBuildContract(unittest.TestCase):
         text = (ROOT / "scripts" / "install_autostart.ps1").read_text(encoding="utf-8")
         self.assertIn("release\\JARVIS.exe", text)
 
+    def test_cli_spec_entry_point_exists(self):
+        """CLI-спека ссылается на реальный entry point и не требует vendor/."""
+        spec = (ROOT / "jarvis.spec").read_text(encoding="utf-8")
+        match = re.search(r'\["([^"]+\.py)"\]', spec)
+        self.assertIsNotNone(match, "в jarvis.spec нет entry-файла")
+        entry = ROOT / match.group(1)
+        self.assertTrue(entry.exists(), f"jarvis.spec ссылается на несуществующий {match.group(1)}")
+        self.assertNotIn("vendor", spec, "CLI-спека не должна требовать vendor/ (он есть только в CI)")
+        self.assertIn('name="jarvis"', spec)
+
+    def test_vendor_paths_consistent_between_spec_and_script(self):
+        """Пути vendor/ в jarvis_desktop.spec должны совпадать с теми, куда качает build_exe.ps1."""
+        spec = (ROOT / "jarvis_desktop.spec").read_text(encoding="utf-8")
+        script = (ROOT / "scripts" / "build_exe.ps1").read_text(encoding="utf-8")
+        for asset in ("vendor/stt_model", "vendor/piper"):
+            self.assertIn(asset, spec, f"jarvis_desktop.spec должна собирать {asset}")
+        for asset in ("vendor\\stt_model", "vendor\\piper"):
+            self.assertIn(asset, script, f"build_exe.ps1 должна скачивать {asset}")
+
+    def test_gitignore_covers_build_artifacts(self):
+        """vendor/ и release/ создаются только сборкой и не должны попадать в git."""
+        text = (ROOT / ".gitignore").read_text(encoding="utf-8")
+        lines = {ln.strip() for ln in text.splitlines()}
+        self.assertIn("vendor/", lines)
+        self.assertIn("release/", lines)
+
 
 if __name__ == "__main__":
     unittest.main()

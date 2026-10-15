@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# JARVIS build artifacts (downloaded at build time, never committed)
+vendor/
+release/
