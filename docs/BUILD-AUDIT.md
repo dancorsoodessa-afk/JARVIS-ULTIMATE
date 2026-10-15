@@ -31,7 +31,7 @@
 
 == Локальное состояние на момент аудита ==
 - HEAD локально выше origin/main на 2 коммита: e845dd6 (docs, Windows build artifact) и 2b9d31e (fix порядка проверок в agent/stt.py transcribe).
-- .claude/, .continue/, CLAUDE.md, copilot-инструкции — untracked, не коммитить (per AGENTS.md).
+- .claude/, .continue/, CLAUDE.md, copilot-инструкции — untracked, не коммитить (per AGENTS.md); с 9e0d3ee добавлены в .gitignore.
 == Итоги после аудита (2026-10-15) ==
 Все найденные проблемы устранены; origin/main = 32675a3, оба последних рана build-exe.yml — completed/success, артефакт JARVIS-Windows-x64 (316 МБ) опубликован.
 - Android-ссылки в README.md и AGENTS.md исправлены (коммит 00a8727): Android/Flutter-сборки в проекте нет.
@@ -39,5 +39,7 @@
 - Добавлен tests/test_build_contract.py (7 smoke-тестов согласованности сборки: workflows, build_exe.ps1, обе спеки, .gitignore).
 - vendor/ и release/ добавлены в .gitignore (сборка создает их локально, коммитить нельзя).
 - 32675a3: чистка мертвого кода по итогам pyflakes (двойной вызов adb devices -l в android_app_diagnostics, бессмысленный file-handle в _speak_piper, мертвые импорты/переменные).
-- Тестовый сьют: 135 passed, 2 skipped (posix-only).
-- Локальное состояние: .claude/, .continue/, CLAUDE.md, copilot-инструкции — untracked, не коммитить (per AGENTS.md).
+- Тестовый сьют: 136 passed, 2 skipped (posix-only).
+- 9e0d3ee: клиентский вывод AI-агентов (.claude/, .continue/, CLAUDE.md, copilot-инструкции) добавлен в .gitignore — git status чистый (per AGENTS.md: не коммитить).
+- Исправлен блокер локальной сборки: build_exe.ps1 использовал $env:RUNNER_TEMP (есть только в GitHub Actions) — локально Join-Path падал на NULL до этапа Piper. Добавлен fallback на [System.IO.Path]::GetTempPath(); покрыто контрактным тестом (test_build_script_has_no_ci_only_dependencies).
+- Локальная smoke-сборка 2026-10-15: scripts/build_exe.ps1 полностью прошла на машине (pip + STT-модель + Piper-голос + pytest + pyinstaller) -> release/JARVIS.exe, 366.9 MB. Smoke-тест: процесс стартует, жив 12 c, создает %APPDATA%\JARVIS\settings.json, останавливается корректно (exit 0).

@@ -65,6 +65,15 @@ class TestBuildContract(unittest.TestCase):
         self.assertIn("vendor/", lines)
         self.assertIn("release/", lines)
 
+    def test_build_script_has_no_ci_only_dependencies(self):
+        """Локальная сборка не должна падать на CI-переменных (RUNNER_TEMP есть только в Actions)."""
+        text = (ROOT / "scripts" / "build_exe.ps1").read_text(encoding="utf-8")
+        self.assertNotRegex(
+            text, r'Join-Path\s+\$env:RUNNER_TEMP',
+            "RUNNER_TEMP без fallback ломает локальную сборку (NULL вне CI)",
+        )
+        self.assertIn("GetTempPath", text, "build_exe.ps1 нужен fallback на системный temp")
+
 
 if __name__ == "__main__":
     unittest.main()

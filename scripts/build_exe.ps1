@@ -35,8 +35,11 @@ if (-not $sttReady) { throw "Offline faster-whisper model download failed after 
 
 Write-Host "== JARVIS: prepare bundled male voice ==" -ForegroundColor Cyan
 $piperUrl = "https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_windows_amd64.zip"
-$piperArchive = Join-Path $env:RUNNER_TEMP "piper_windows_amd64.zip"
-$piperExtract = Join-Path $env:RUNNER_TEMP "piper_extract"
+# RUNNER_TEMP is set only on GitHub Actions; fall back to the system temp for
+# local builds so scripts\build_exe.ps1 works on a developer machine too.
+$tempRoot = if ($env:RUNNER_TEMP) { $env:RUNNER_TEMP } else { [System.IO.Path]::GetTempPath() }
+$piperArchive = Join-Path $tempRoot "piper_windows_amd64.zip"
+$piperExtract = Join-Path $tempRoot "piper_extract"
 $vendorPiper = Join-Path $PWD "vendor\piper"
 Remove-Item $vendorPiper -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item $piperExtract -Recurse -Force -ErrorAction SilentlyContinue
