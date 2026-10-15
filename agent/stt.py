@@ -59,11 +59,14 @@ def warmup() -> None:
 
 
 def transcribe(audio_path: str) -> str:
-    if current_engine() == "off":
+    mode = os.environ.get("JARVIS_STT", "faster-whisper").strip().lower()
+    if mode == "off":
         raise RuntimeError("Распознавание речи отключено или faster-whisper не установлен.")
     path = Path(audio_path)
     if not path.exists():
         raise ValueError(f"Файл не найден: {audio_path}")
+    if current_engine() == "off":
+        raise RuntimeError("Распознавание речи отключено или faster-whisper не установлен.")
     model = _get_model()
     segments, _info = model.transcribe(
         str(path),
